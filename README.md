@@ -49,17 +49,3 @@ Coming Soon
    git clone https://github.com/your-username/cnnct-social-media.git
    cd cnnct-social-media
    ```
-
-2. Install dependencies:
-
-   ```
-   npm install
-   ```
-
-3. Start the development server:
-
-   ```
-   npm run dev
-   ```
-
-4. Access the site on your browser at http://localhost:3000.

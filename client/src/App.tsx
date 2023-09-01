@@ -4,7 +4,9 @@ import './App.css';
 
 function App() {
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
   const socket = useRef<Socket | null>(null);
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
     // Connect to the server's WebSocket
@@ -13,12 +15,19 @@ function App() {
     // Listen to 'receive_message' event from the server
     socket.current.on('receive_message', (msg: string) => {
       console.log(`Received message: ${msg}`);
+      setMessages((prevMessages) => [...prevMessages, msg]);
     });
 
     return () => {
       socket.current?.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +39,20 @@ function App() {
   return (
     <div>
       <h1 className="text-3xl font-bold underline">Real Time Messaging</h1>
+      <div
+        className="bg-white p-8 rounded shadow-md w-96 mt-8 overflow-y-scroll h-64"
+        ref={messagesEndRef}
+      >
+        <h1 className="text-xl font-bold mb-4">Messages</h1>
+        <ul>
+          {messages.map((msg, idx) => (
+            <li key={idx} className="mb-2">
+              {msg}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="bg-white p-8 rounded shadow-md w-96">
         <h1 className="text-xl font-bold mb-4">Send a Message</h1>
         <form onSubmit={handleSendMessage}>

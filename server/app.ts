@@ -39,9 +39,6 @@ app.use(setCurrentUser);
 app.use(express.json());
 
 passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
 passport.use(
   new JwtStrategy(opts, (jwt_payload, done) => {
     User.findById(jwt_payload.id)
@@ -54,6 +51,8 @@ passport.use(
       .catch((err) => done(err, false));
   })
 );
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use('/user', userRoutes);
 

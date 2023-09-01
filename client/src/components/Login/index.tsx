@@ -24,6 +24,7 @@ function Login() {
 
       if (data.token) {
         localStorage.setItem('authToken', data.token);
+        window.location.href = '/';
       } else {
         console.error(data.message);
       }

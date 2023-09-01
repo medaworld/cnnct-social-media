@@ -1,28 +1,95 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+import passport from 'passport';
+import session from 'express-session';
 import socketIo from 'socket.io';
-import mongoose from 'mongoose';
+import { secret, store } from './config/mongoose';
+import { setCurrentUser } from './middleware/setCurrentUser';
+import User from './models/User';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import { Strategy as LocalStrategy } from 'passport-local';
+import userRoutes from './routes/users';
+import cors from 'cors';
 require('dotenv').config({ path: './.env.local' });
 
-const dbUrl = process.env.MONGO_URI!;
-
+const port = process.env.PORT || 8080;
 const app = express();
 
-mongoose
-  .connect(dbUrl)
-  .then((result) => {
-    const server = app.listen(8080);
-    const io = require('socket.io')(server, { cors: { origin: '*' } });
-    io.on('connection', (socket: socketIo.Socket) => {
-      console.log('Client connected');
+const sessionConfig = {
+  store,
+  name: 'session',
+  secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 
-      socket.on('send_message', (message: string) => {
-        console.log(`Message received: ${message}`);
-        io.emit('receive_message', message);
-      });
+const opts = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET,
+};
 
-      socket.on('disconnect', () => {
-        console.log('Client disconnected');
-      });
-    });
+app.use(cors());
+app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(setCurrentUser);
+app.use(express.json());
+
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username });
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username' });
+      }
+      if (!user.authenticate(password)) {
+        return done(null, false, { message: 'Incorrect password' });
+      }
+      return done(null, user);
+    } catch (e) {
+      return done(e);
+    }
   })
-  .catch((err) => console.log(err));
+);
+
+passport.use(
+  new JwtStrategy(opts, (jwt_payload, done) => {
+    User.findById(jwt_payload.id)
+      .then((user) => {
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
+      })
+      .catch((err) => done(err, false));
+  })
+);
+
+app.use('/user', userRoutes);
+
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
+
+const server = app.listen(port);
+const io = require('socket.io')(server, { cors: { origin: '*' } });
+
+io.on('connection', (socket: socketIo.Socket) => {
+  console.log('Client connected');
+
+  socket.on('send_message', (message: string) => {
+    console.log(`Message received: ${message}`);
+    io.emit('receive_message', message);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});

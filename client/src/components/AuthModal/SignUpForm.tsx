@@ -2,15 +2,14 @@ import { useState } from 'react';
 
 function SignUpForm() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    username: '',
     email: '',
     password: '',
-    birthday: '',
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(formData);
     try {
       const response = await fetch('http://localhost:8080/user/register', {
         method: 'POST',
@@ -24,8 +23,7 @@ function SignUpForm() {
 
       if (data.token) {
         localStorage.setItem('authToken', data.token);
-
-        window.location.href = '/dashboard';
+        // window.location.href = '/dashboard';
       } else if (data.message) {
         console.log(data.message);
       }
@@ -40,35 +38,21 @@ function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="text-start mb-4">
+    <form onSubmit={handleSubmit} className="w-96">
+      <div className="text-start mb-4 ">
         <h2 className="text-2xl font-bold">Sign Up</h2>
       </div>
 
-      <div className="flex mb-4 space-x-4">
-        <div className="flex-1">
-          <label className="sr-only">First Name</label>
-          <input
-            name="firstName"
-            type="text"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            placeholder="First Name"
-          />
-        </div>
-
-        <div className="flex-1">
-          <label className="sr-only">Last Name</label>
-          <input
-            name="lastName"
-            type="text"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-            placeholder="Last Name"
-          />
-        </div>
+      <div className="mb-4">
+        <label className="sr-only">Username</label>
+        <input
+          name="username"
+          type="text"
+          value={formData.username}
+          onChange={handleInputChange}
+          className="w-full p-2 border rounded"
+          placeholder="Username"
+        />
       </div>
 
       <div className="mb-4">
@@ -94,19 +78,6 @@ function SignUpForm() {
           className="w-full p-2 border rounded"
           placeholder="Password"
           aria-label="Password"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label>Birthday</label>
-        <input
-          name="birthday"
-          type="date"
-          value={formData.birthday}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          placeholder="Birthday"
-          aria-label="Birthday"
         />
       </div>
 

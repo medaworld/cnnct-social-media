@@ -3,11 +3,7 @@ const Schema = mongoose.Schema;
 import passportLocalMongoose from 'passport-local-mongoose';
 
 const UserSchema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
+  username: {
     type: String,
     required: true,
   },
@@ -16,13 +12,9 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
   },
-  birthday: {
-    type: Date,
-    required: true,
-  },
 });
 
-UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
+UserSchema.plugin(passportLocalMongoose);
 
 const User = mongoose.model('User', UserSchema);
 

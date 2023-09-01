@@ -38,22 +38,9 @@ app.use(passport.session());
 app.use(setCurrentUser);
 app.use(express.json());
 
-passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    try {
-      const user = await User.findOne({ username });
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username' });
-      }
-      if (!user.authenticate(password)) {
-        return done(null, false, { message: 'Incorrect password' });
-      }
-      return done(null, user);
-    } catch (e) {
-      return done(e);
-    }
-  })
-);
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 passport.use(
   new JwtStrategy(opts, (jwt_payload, done) => {

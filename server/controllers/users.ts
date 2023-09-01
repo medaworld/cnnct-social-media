@@ -24,12 +24,10 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
-    const { firstName, lastName, email, password, birthday } = req.body;
+    const { username, email, password } = req.body;
     const user = new User({
-      firstName,
-      lastName,
+      username,
       email,
-      birthday: new Date(birthday),
     });
     const registeredUser = await User.register(user, password);
     if (registeredUser) {
@@ -52,6 +50,7 @@ export const login = async (
   next: NextFunction
 ) => {
   try {
+    console.log('hello');
     if (req.user) {
       const user: any = req.user;
       const token = jwt.sign({ id: user._id }, jwtSecret, {
@@ -60,6 +59,7 @@ export const login = async (
       res
         .status(200)
         .json({ token, message: 'User logged in!', userId: user._id });
+      console.log('User logged in');
     } else {
       throw new Error('Authentication failed.');
     }

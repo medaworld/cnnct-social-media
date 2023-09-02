@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { json, useNavigation } from 'react-router-dom';
 
-function SignUpForm() {
+function RegisterForm() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
   const [formData, setFormData] = useState({
@@ -105,7 +105,7 @@ function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-96">
+    <form onSubmit={handleSubmit} className="w-full">
       <div className="text-start mb-4 ">
         <h2 className="text-2xl font-bold">Sign Up</h2>
       </div>
@@ -159,4 +159,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default RegisterForm;

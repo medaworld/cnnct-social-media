@@ -1,4 +1,5 @@
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+require('dotenv').config({ path: './.env.local' });
 
 export const cloudinary = require('cloudinary').v2;
 cloudinary.config({

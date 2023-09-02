@@ -1,10 +1,12 @@
 import { Button } from '@material-tailwind/react';
+import { Link } from 'react-router-dom';
 
 import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
 import CustomModal from '../CustomModal';
-import PostForm from '../Dashboard/PostForm';
+import PostForm from '../PostForm/PostForm';
 import { useState } from 'react';
+import logo from '../../assets/logo.png';
 
 export default function MainNavigation() {
   const [showModal, setShowModal] = useState(false);
@@ -12,50 +14,41 @@ export default function MainNavigation() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8080/user/logout', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.message === 'Logged out successfully') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('expiration');
-        window.location.href = '/';
-      } else {
-        console.error(data.message);
-      }
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('expiration');
+      window.location.href = '/';
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
   return (
     <>
-      <div className="w-72 p-4 bg-white shadow-md flex flex-col">
-        <div className="flex-1 flex flex-col space-y-4">
-          <div className="flex items-center space-x-3">
-            <FaHome />
+      <div className="w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0">
+        <div className="flex-1 flex flex-col space-y-6">
+          <img
+            src={logo}
+            alt="cnnct logo"
+            className="mb-4 w-32 mx-auto md:mx-0"
+          />
+          <Link to="/home" className="flex items-center space-x-4 text-xl">
+            <FaHome className="text-2xl" />
             <span>Home</span>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <FaBell />
+          </Link>
+          <Link
+            to="/notifications"
+            className="flex items-center space-x-4 text-xl"
+          >
+            <FaBell className="text-2xl" />
             <span>Notifications</span>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <FaEnvelope />
+          </Link>
+          <Link to="/messages" className="flex items-center space-x-4 text-xl">
+            <FaEnvelope className="text-2xl" />
             <span>Messages</span>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <FaUser />
+          </Link>
+          <Link to="/profile" className="flex items-center space-x-4 text-xl">
+            <FaUser className="text-2xl" />
             <span>Profile</span>
-          </div>
-
+          </Link>
           <Button color="blue" onClick={() => setShowModal(true)}>
             Post
           </Button>

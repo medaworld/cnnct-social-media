@@ -1,24 +1,36 @@
 import { useRef, useState } from 'react';
 import { FaImage } from 'react-icons/fa';
 import { Form } from 'react-router-dom';
+import { compressImage } from '../../utils/imageUtils';
 
 export default function PostForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [formImage, setFormImage] = useState<FormData>();
   const [inputValue, setInputValue] = useState('');
 
   const handleInputChange = (e: any) => {
     setInputValue(e.target.value);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
+      const compressedBlob = await compressImage(file);
+      const compressedFile = new File([compressedBlob], file.name, {
+        type: compressedBlob.type,
+        lastModified: file.lastModified,
+      });
+
+      const formData = new FormData();
+      formData.append('image', compressedFile);
+      setFormImage(formData);
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreviewUrl(reader.result as string);
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(compressedFile);
     }
   };
 
@@ -38,23 +50,42 @@ export default function PostForm() {
   // GraphQL
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const graphqlQuery = {
-      query: `
-          mutation {
-              createPost(postInput: {content:"${inputValue}", imageUrl:"url"}) {
-                  _id
-                  content
-                  imageUrl
-                  creator {
-                    username
-                  }
-                  createdAt
-                }
-            }
-            `,
-    };
+
     try {
       const token = localStorage.getItem('authToken');
+      let imageUrl = null;
+      if (formImage) {
+        const imageResponse = await fetch(
+          'http://localhost:8080/upload-image',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+            body: formImage,
+          }
+        );
+
+        const imageData = await imageResponse.json();
+        imageUrl = `"${imageData.filePath}"`;
+      }
+
+      const graphqlQuery = {
+        query: `
+            mutation {
+                createPost(postInput: {content:"${inputValue}", imageUrl:${imageUrl}}) {
+                    _id
+                    content
+                    imageUrl
+                    creator {
+                      username
+                    }
+                    createdAt
+                  }
+              }
+              `,
+      };
+
       const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
@@ -65,8 +96,9 @@ export default function PostForm() {
       });
 
       const data = await response.json();
+      console.log('Successfully Posted:' + data);
     } catch (error) {
-      console.error('Error registering user:', error);
+      console.error('Error posting:', error);
     }
   };
 

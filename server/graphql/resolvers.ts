@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import Post from '../models/Post';
@@ -53,7 +52,7 @@ export default {
       const error = new Error('User not found');
       throw error;
     }
-    console.log(user);
+
     const authenticateUser = User.authenticate();
     const authenticatedUser = await authenticateUser(username, password);
 

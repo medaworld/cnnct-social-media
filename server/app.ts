@@ -82,8 +82,17 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use('/user', userRoutes);
-app.put('/post-image', (req, res, next) => {
-  upload.array('image');
+app.post('/upload-image', upload.single('image'), (req: any, res, next) => {
+  if (!req.isAuth) {
+    const error = new Error('Not authenticated');
+    throw error;
+  }
+  if (!req.file) {
+    return res.status(200).json({ message: 'No file provided' });
+  }
+  return res
+    .status(201)
+    .json({ message: 'File stored.', filePath: req.file.path });
 });
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {

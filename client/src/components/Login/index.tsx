@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import AuthModal from '../AuthModal';
 import logo from '../../assets/logo.png';
+import CustomModal from '../CustomModal';
+import SignUpForm from '../Register/RegisterForm';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -129,7 +130,9 @@ function Login() {
         </div>
       </div>
 
-      <AuthModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <CustomModal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <SignUpForm />
+      </CustomModal>
     </div>
   );
 }

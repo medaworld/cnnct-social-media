@@ -10,16 +10,26 @@ function SignUpForm() {
     password: '',
   });
 
+  // GraphQL
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    const graphqlQuery = {
+      query: `
+        mutation {
+          createUser(userInput: {username:"${formData.username}", email:"${formData.email}", password:"${formData.password}"}) {
+            _id
+            token
+          }
+        }
+      `,
+    };
     try {
-      const response = await fetch('http://localhost:8080/user/register', {
+      const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(graphqlQuery),
       });
 
       if (response.status === 422 || response.status === 400) {
@@ -34,7 +44,8 @@ function SignUpForm() {
       }
 
       const data = await response.json();
-      const token = data.token;
+
+      const { token } = data.data.createUser;
       if (token) {
         localStorage.setItem('authToken', token);
         const expiration = new Date();
@@ -48,6 +59,45 @@ function SignUpForm() {
       console.error('Error registering user:', error);
     }
   };
+
+  // API
+  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await fetch('http://localhost:8080/user/register', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+
+  //     if (response.status === 422 || response.status === 400) {
+  //       return response;
+  //     }
+
+  //     if (!response.ok) {
+  //       throw json(
+  //         { message: 'Could not authenticate user.' },
+  //         { status: 500 }
+  //       );
+  //     }
+
+  //     const data = await response.json();
+  //     const token = data.token;
+  //     if (token) {
+  //       localStorage.setItem('authToken', token);
+  //       const expiration = new Date();
+  //       expiration.setHours(expiration.getHours() + 1);
+  //       localStorage.setItem('expiration', expiration.toISOString());
+  //       window.location.href = '/';
+  //     } else if (data.message) {
+  //       console.log(data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error registering user:', error);
+  //   }
+  // };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

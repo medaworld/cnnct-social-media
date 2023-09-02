@@ -1,14 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+const jwtSecret: string = process.env.JWT_SECRET!;
 
-export const isAuthenticated = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (req.isAuthenticated()) {
+export default function (req: any, res: Response, next: NextFunction) {
+  const authHeader = req.get('Authorization');
+
+  if (!authHeader) {
+    req.isAuth = false;
     return next();
   }
-  res
-    .status(401)
-    .json({ message: 'You need to be authenticated to access this route' });
-};
+
+  const token = authHeader.split(' ')[1];
+  let decodedToken: any;
+  try {
+    decodedToken = jwt.verify(token, jwtSecret);
+  } catch (err) {
+    req.isAuth = false;
+    return next();
+  }
+  req.userId = decodedToken.id;
+  req.isAuth = true;
+  next();
+}

@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import bcrypt from 'bcryptjs';
 import User from '../models/User';
-import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
 const jwtSecret: string = process.env.JWT_SECRET!;

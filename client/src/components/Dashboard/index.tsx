@@ -1,8 +1,12 @@
+import PostForm from './PostForm';
+
 function Dashboard() {
   return (
     <div className="flex h-screen">
-      <div className="flex-1 p-6">
-        <h1>Welcome!</h1>
+      <div className="flex-1 p-8 ">
+        <div className="flex flex-col p-3 border-b border-gray-300">
+          <PostForm />
+        </div>
       </div>
 
       <div className="w-72 p-4 bg-white shadow-md flex flex-col space-y-4">
@@ -11,7 +15,6 @@ function Dashboard() {
           type="text"
           placeholder="Search..."
         />
-
         <div>
           <h2 className="text-xl font-semibold mb-2">Top 10 Trending</h2>
           <ul>

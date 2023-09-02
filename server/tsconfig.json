@@ -13,6 +13,6 @@
     "typeRoots": ["./node_modules/@types", "./types"],
     "lib": ["ES2020"]
   },
-  "include": ["/**/*.ts"],
+  "include": ["/**/*.ts", "types/*"],
   "exclude": ["node_modules"]
 }

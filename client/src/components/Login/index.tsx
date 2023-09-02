@@ -7,33 +7,74 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showModal, setShowModal] = useState(false);
 
+  // GraphQL
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const graphqlQuery = {
+      query: `
+         {
+          login(username:"${username}",  password:"${password}") {
+            token
+            _id
+          }
+        }
+      `,
+    };
 
     try {
-      const response = await fetch('http://localhost:8080/user/login', {
+      const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(graphqlQuery),
       });
 
       const data = await response.json();
 
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
+      const { token } = data.data.login;
+      if (token) {
+        localStorage.setItem('authToken', token);
         const expiration = new Date();
         expiration.setHours(expiration.getHours() + 1);
         localStorage.setItem('expiration', expiration.toISOString());
         return (window.location.href = '/');
       } else {
-        console.error(data.message);
+        console.error(data.errors.message);
       }
     } catch (error) {
       console.error('Error logging in:', error);
     }
   };
+
+  // API
+  // const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const response = await fetch('http://localhost:8080/user/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ username, password }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.token) {
+  //       localStorage.setItem('authToken', data.token);
+  //       const expiration = new Date();
+  //       expiration.setHours(expiration.getHours() + 1);
+  //       localStorage.setItem('expiration', expiration.toISOString());
+  //       return (window.location.href = '/');
+  //     } else {
+  //       console.error(data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error logging in:', error);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

@@ -2,8 +2,12 @@ import { Button } from '@material-tailwind/react';
 
 import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
+import CustomModal from '../CustomModal';
+import PostForm from '../Dashboard/PostForm';
+import { useState } from 'react';
 
 export default function MainNavigation() {
+  const [showModal, setShowModal] = useState(false);
   useRouteLoaderData('root');
 
   const handleLogout = async () => {
@@ -52,7 +56,9 @@ export default function MainNavigation() {
             <span>Profile</span>
           </div>
 
-          <Button color="blue">Post</Button>
+          <Button color="blue" onClick={() => setShowModal(true)}>
+            Post
+          </Button>
 
           <div className="mt-auto"></div>
         </div>
@@ -60,6 +66,10 @@ export default function MainNavigation() {
           Logout
         </Button>
       </div>
+
+      <CustomModal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <PostForm />
+      </CustomModal>
     </>
   );
 }

@@ -9,6 +9,10 @@ import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import userRoutes from './routes/users';
 import cors from 'cors';
+import { graphqlHTTP } from 'express-graphql';
+import graphqlSchema from './graphql/schema';
+import graphqlResolvers from './graphql/resolvers';
+import isAuthenticated from './middleware/isAuthenticated';
 require('dotenv').config({ path: './.env.local' });
 
 const port = process.env.PORT || 8080;
@@ -37,6 +41,25 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(setCurrentUser);
 app.use(express.json());
+
+app.use(isAuthenticated);
+app.use(
+  '/graphql',
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolvers,
+    graphiql: true,
+    customFormatErrorFn(error: any) {
+      if (!error.originalError) {
+        return error;
+      }
+      const data = error.originalError.data;
+      const message = error.message || 'An error occurred';
+      const code = error.originalError.code || 500;
+      return { message: message, status: code, data: data };
+    },
+  })
+);
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.use(

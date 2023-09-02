@@ -13,6 +13,10 @@ import { graphqlHTTP } from 'express-graphql';
 import graphqlSchema from './graphql/schema';
 import graphqlResolvers from './graphql/resolvers';
 import isAuthenticated from './middleware/isAuthenticated';
+import multer from 'multer';
+import { storage } from './config/cloudinary';
+const upload = multer({ storage });
+
 require('dotenv').config({ path: './.env.local' });
 
 const port = process.env.PORT || 8080;
@@ -78,6 +82,9 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use('/user', userRoutes);
+app.put('/post-image', (req, res, next) => {
+  upload.array('image');
+});
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   console.log(error);

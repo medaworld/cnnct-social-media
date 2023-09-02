@@ -74,23 +74,3 @@ export const login = async (
     next(e);
   }
 };
-
-export const logout = (req: Request, res: Response, next: NextFunction) => {
-  req.logout((err: any) => {
-    if (err) {
-      return next(err);
-    }
-
-    if (req.session) {
-      req.session.destroy((error) => {
-        if (error) {
-          return next(error);
-        }
-        res.clearCookie('session');
-        res.status(200).json({ message: 'Logged out successfully' });
-      });
-    } else {
-      res.status(200).json({ message: 'Logged out successfully' });
-    }
-  });
-};

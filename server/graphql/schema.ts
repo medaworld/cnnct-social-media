@@ -22,6 +22,11 @@ export default buildSchema(`
         token: String!
     }
 
+    type PostData {
+        posts: [Post!]!
+        totalPosts: Int!
+    }
+
     input UserInputData {
         email: String!
         username: String!
@@ -35,6 +40,7 @@ export default buildSchema(`
 
     type RootQuery {
         login(username: String!, password: String!): AuthData!
+        posts(skip: Int!, limit: Int!): PostData!
     }
 
     type RootMutation {

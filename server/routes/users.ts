@@ -1,7 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import User from '../models/User';
-import { login, register, logout } from '../controllers/users';
+import { login, register } from '../controllers/users';
 import passport from 'passport';
 
 const router = express.Router();
@@ -36,7 +36,5 @@ router.post(
 );
 
 router.post('/login', passport.authenticate('local'), login);
-
-router.get('/logout', logout);
 
 export default router;

@@ -1,8 +1,6 @@
 import express from 'express';
 import { body } from 'express-validator';
 import User from '../models/User';
-
-import { isAuthenticated } from '../middleware/isAuthenticated';
 import { login, register, logout } from '../controllers/users';
 import passport from 'passport';
 
@@ -11,17 +9,28 @@ const router = express.Router();
 router.post(
   '/register',
   [
+    body('username')
+      .trim()
+      .notEmpty()
+      .custom(async (value, { req }) => {
+        const userDoc = await User.findOne({ username: value });
+        if (userDoc) {
+          return Promise.reject('Username already exists!');
+        }
+      }),
     body('email')
+      .trim()
+      .notEmpty()
       .isEmail()
       .withMessage('Please enter a valid email')
+      .normalizeEmail()
       .custom(async (value, { req }) => {
         const userDoc = await User.findOne({ email: value });
         if (userDoc) {
           return Promise.reject('Email address already exists!');
         }
-      })
-      .normalizeEmail(),
-    body('password').trim().isLength({ min: 5 }),
+      }),
+    body('password').trim().isLength({ min: 3 }),
   ],
   register
 );

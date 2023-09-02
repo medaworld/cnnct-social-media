@@ -24,6 +24,10 @@ export const register = async (
   next: NextFunction
 ) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     const { username, email, password } = req.body;
     const user = new User({
       username,
@@ -31,9 +35,12 @@ export const register = async (
     });
     const registeredUser = await User.register(user, password);
     if (registeredUser) {
+      const token = jwt.sign({ id: registeredUser._id }, jwtSecret, {
+        expiresIn: '1h',
+      });
       res
         .status(201)
-        .json({ message: 'User Created!', userId: registeredUser._id });
+        .json({ token, message: 'User Created!', userId: registeredUser._id });
       console.log('User created');
     }
   } catch (e) {
@@ -50,7 +57,6 @@ export const login = async (
   next: NextFunction
 ) => {
   try {
-    console.log('hello');
     if (req.user) {
       const user: any = req.user;
       const token = jwt.sign({ id: user._id }, jwtSecret, {

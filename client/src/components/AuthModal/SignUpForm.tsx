@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { json, useNavigation } from 'react-router-dom';
 
 function SignUpForm() {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === 'submitting';
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -19,11 +22,25 @@ function SignUpForm() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      if (response.status === 422 || response.status === 400) {
+        return response;
+      }
 
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        // window.location.href = '/dashboard';
+      if (!response.ok) {
+        throw json(
+          { message: 'Could not authenticate user.' },
+          { status: 500 }
+        );
+      }
+
+      const data = await response.json();
+      const token = data.token;
+      if (token) {
+        localStorage.setItem('authToken', token);
+        const expiration = new Date();
+        expiration.setHours(expiration.getHours() + 1);
+        localStorage.setItem('expiration', expiration.toISOString());
+        window.location.href = '/';
       } else if (data.message) {
         console.log(data.message);
       }
@@ -84,8 +101,9 @@ function SignUpForm() {
       <button
         type="submit"
         className="block w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
+        disabled={isSubmitting}
       >
-        Create Account
+        {isSubmitting ? 'Submitting...' : 'Create Account'}
       </button>
     </form>
   );

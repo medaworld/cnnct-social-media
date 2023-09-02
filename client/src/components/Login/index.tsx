@@ -8,7 +8,6 @@ function Login() {
   const [showModal, setShowModal] = useState(false);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('hello');
     e.preventDefault();
 
     try {
@@ -24,7 +23,10 @@ function Login() {
 
       if (data.token) {
         localStorage.setItem('authToken', data.token);
-        window.location.href = '/';
+        const expiration = new Date();
+        expiration.setHours(expiration.getHours() + 1);
+        localStorage.setItem('expiration', expiration.toISOString());
+        return (window.location.href = '/');
       } else {
         console.error(data.message);
       }
@@ -49,7 +51,7 @@ function Login() {
 
           {/* Right Section */}
           <div className="flex-1 p-4">
-            <h2 className="text-2xl mb-4">Sign in to cnnct</h2>
+            <h2 className="text-2xl mb-4">Sign in</h2>
             <form onSubmit={handleLogin}>
               <div className="mb-4">
                 <input

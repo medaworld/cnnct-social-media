@@ -2,8 +2,12 @@ import { useRef, useState } from 'react';
 import { FaImage } from 'react-icons/fa';
 import { Form } from 'react-router-dom';
 import { compressImage } from '../../utils/imageUtils';
+import { useDispatch } from 'react-redux';
+import { addPost } from '../../store/post-actions';
+import { AppDispatch } from '../../store';
 
 export default function PostForm() {
+  const dispatch = useDispatch<AppDispatch>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const [formImage, setFormImage] = useState<FormData>();
@@ -47,58 +51,17 @@ export default function PostForm() {
     }
   };
 
-  // GraphQL
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
-      const token = localStorage.getItem('authToken');
-      let imageUrl = null;
-      if (formImage) {
-        const imageResponse = await fetch(
-          'http://localhost:8080/upload-image',
-          {
-            method: 'POST',
-            headers: {
-              Authorization: 'Bearer ' + token,
-            },
-            body: formImage,
-          }
-        );
-
-        const imageData = await imageResponse.json();
-        imageUrl = `"${imageData.filePath}"`;
+      const result = await dispatch(addPost(inputValue, formImage));
+      if (result) {
+        setInputValue('');
+        setImagePreviewUrl(null);
+        setFormImage(undefined);
       }
-
-      const graphqlQuery = {
-        query: `
-            mutation {
-                createPost(postInput: {content:"${inputValue}", imageUrl:${imageUrl}}) {
-                    _id
-                    content
-                    imageUrl
-                    creator {
-                      username
-                    }
-                    createdAt
-                  }
-              }
-              `,
-      };
-
-      const response = await fetch('http://localhost:8080/graphql', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(graphqlQuery),
-      });
-
-      const data = await response.json();
-      console.log('Successfully Posted:' + data);
     } catch (error) {
-      console.error('Error posting:', error);
+      console.error('Error submitting post:', error);
     }
   };
 

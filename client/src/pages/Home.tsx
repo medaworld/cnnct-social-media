@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Login from '../components/Login';
-import Dashboard from '../components/Dashboard';
+import Login from '../components/Home/Login';
+import Home from '../components/Home/Home';
 
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,7 +13,7 @@ export default function HomePage() {
   }, []);
 
   if (isLoggedIn) {
-    return <Dashboard />;
+    return <Home />;
   } else {
     return <Login />;
   }

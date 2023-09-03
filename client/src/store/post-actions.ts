@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { postActions } from './post-slice';
 import { toast } from 'react-toastify';
+import { userActions } from './user-slice';
 
 export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
   return async (dispatch: Dispatch) => {
@@ -130,6 +131,7 @@ export const addPost = (content: string, formImage: FormData | undefined) => {
     }
 
     dispatch(postActions.addPost(data.data.createPost));
+    dispatch(userActions.addPost(data.data.createPost));
     toast.update(toastId, {
       render: 'Post successful',
       type: 'success',
@@ -173,6 +175,7 @@ export const deletePost = (postId: string) => {
     }
 
     dispatch(postActions.deletePost(postId));
+    dispatch(userActions.deletePost(postId));
     return true;
   };
 };

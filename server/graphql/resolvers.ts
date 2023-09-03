@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import Post from '../models/Post';
@@ -21,7 +20,7 @@ export default {
       {
         userId: registeredUser._id.toString(),
       },
-      'jwtSecret',
+      jwtSecret,
       { expiresIn: '1h' }
     );
     return {
@@ -122,6 +121,7 @@ export default {
       totalPosts: totalPosts,
     };
   },
+
   deletePost: async function ({ postId }: { postId: string }, req: any) {
     if (!req.isAuth) {
       throw new Error('Not authenticated');
@@ -155,5 +155,104 @@ export default {
     await user.save();
 
     return { message: 'Post deleted successfully' };
+  },
+
+  user: async function (args: any, req: any) {
+    if (!req.isAuth) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      ...user._doc,
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      image: user.image,
+    };
+  },
+
+  userPosts: async function (args: any, req: any) {
+    if (!req.isAuth) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await User.findOne({ username: args.username });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    let userPosts;
+    let totalPosts;
+    if (user) {
+      totalPosts = await Post.countDocuments({ creator: user._id });
+      const nonmodUserPosts = await Post.find({ creator: user._id })
+        .sort({ createdAt: -1 })
+        .skip(args.skip)
+        .limit(args.limit)
+        .populate('creator');
+      userPosts = nonmodUserPosts.map((post) => {
+        return {
+          ...post._doc,
+          _id: post._id.toString(),
+          createdAt: post.createdAt.toISOString(),
+        };
+      });
+    }
+
+    return {
+      ...user._doc,
+      _id: user._id.toString(),
+      user: user,
+      posts: userPosts,
+      totalPosts: totalPosts,
+    };
+  },
+
+  userProfile: async function (
+    {
+      username,
+      skip,
+      limit,
+    }: { username: string; skip: number; limit: number },
+    req: any
+  ) {
+    if (!req.isAuth) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await User.findOne({ username: username });
+    let userPosts;
+    let totalPosts;
+    if (user) {
+      totalPosts = await Post.countDocuments({ creator: user._id });
+      userPosts = await Post.find({ creator: user._id })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('creator');
+    }
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      user: {
+        ...user._doc,
+        _id: user._id.toString(),
+        username: user.username.toString(),
+        email: user.email.toString(),
+        image: user.image,
+        posts: userPosts,
+        totalPosts: totalPosts,
+      },
+    };
   },
 };

@@ -1,28 +1,37 @@
 import { Button } from '@material-tailwind/react';
 import { Link } from 'react-router-dom';
 
-import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
+import { FaHome, FaEnvelope, FaUser } from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
-import CustomModal from '../CustomModal';
-import PostForm from '../PostForm/PostForm';
-import { useState } from 'react';
+import CustomModal from '../Common/CustomModal';
+import PostForm from '../Common/PostForm';
+import { useEffect, useState } from 'react';
 import logo from '../../assets/logo.png';
-import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUser, logoutUser } from '../../store/user-actions';
+import { AppDispatch } from '../../store';
+import { UserState } from '../../store/user-slice';
 
 export default function MainNavigation() {
-  const [showModal, setShowModal] = useState(false);
   useRouteLoaderData('root');
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector(
+    ({ userState }: { userState: UserState }) => userState
+  );
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await dispatch(fetchUser());
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [dispatch]);
 
   const handleLogout = async () => {
-    try {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('expiration');
-      toast.success('Logout Successful');
-      window.location.href = '/';
-    } catch (error) {
-      toast.error('Logout Failed');
-      console.error('Error during logout:', error);
-    }
+    dispatch(logoutUser());
   };
   return (
     <>
@@ -41,13 +50,6 @@ export default function MainNavigation() {
             <span>Home</span>
           </Link>
           <Link
-            to="/notifications"
-            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
-          >
-            <FaBell className="text-2xl" />
-            <span>Notifications</span>
-          </Link>
-          <Link
             to="/messages"
             className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
           >
@@ -55,7 +57,7 @@ export default function MainNavigation() {
             <span>Messages</span>
           </Link>
           <Link
-            to="/profile"
+            to="/edit-profile"
             className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
           >
             <FaUser className="text-2xl" />
@@ -67,6 +69,9 @@ export default function MainNavigation() {
 
           <div className="mt-auto"></div>
         </div>
+        <span className="flex items-center space-x-4 text-lg  p-2 rounded">
+          {user.username && `@${user.username}`}
+        </span>
         <Button color="white" onClick={handleLogout}>
           Logout
         </Button>

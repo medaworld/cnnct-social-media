@@ -1,68 +1,40 @@
 import { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useSelector } from 'react-redux';
 
-import { useDispatch } from 'react-redux';
-import { Post, PostState } from '../../store/post-slice';
-import { deletePost, fetchPosts } from '../../store/post-actions';
-import { AppDispatch } from '../../store';
+import { Post } from '../../store/post-slice';
+
 import { FaTrash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { UserState } from '../../store/user-slice';
 
-export default function PostFeed() {
-  const POSTS_PER_PAGE = 50;
+interface PostFeedProps {
+  posts: Post[];
+  hasMore: boolean;
+  fetchMoreData: () => void;
+  onDeletePost?: (postId: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
+}
 
-  const dispatch = useDispatch<AppDispatch>();
-  const posts = useSelector((state: PostState) => state.posts);
-  const hasMore = useSelector((state: PostState) => state.hasMore);
+export default function PostFeed({
+  posts,
+  hasMore,
+  fetchMoreData,
+  onDeletePost,
+  isLoading = true,
+  error = null,
+}: PostFeedProps) {
+  const user = useSelector(
+    ({ userState }: { userState: UserState }) => userState
+  );
 
   const menuRef = useRef<HTMLDivElement>(null);
-  const [page, setPage] = useState(1);
   const [openMenuPostId, setOpenMenuPostId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchMoreData = async () => {
-    try {
-      setIsLoading(true);
-      await dispatch(fetchPosts(page, POSTS_PER_PAGE));
-      setPage((prev) => prev + 1);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch posts. Please try again later.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        await dispatch(fetchPosts(1, POSTS_PER_PAGE));
-        setError(null);
-      } catch (err) {
-        setError('Failed to fetch posts. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [dispatch]);
 
   const handleOutsideClick = (e: any) => {
     if (menuRef.current && !menuRef.current.contains(e.target)) {
       setOpenMenuPostId(null);
-    }
-  };
-
-  const handleDelete = async (postId: string) => {
-    try {
-      await dispatch(deletePost(postId));
-      console.log('Post deleted successfully');
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      toast.error('Delete Failed');
     }
   };
 
@@ -117,16 +89,18 @@ export default function PostFeed() {
                   {new Date(post.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <button
-                className="hover:bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full"
-                onClick={() =>
-                  setOpenMenuPostId(
-                    post._id === openMenuPostId ? null : post._id
-                  )
-                }
-              >
-                ...
-              </button>
+              {onDeletePost && user.username === post.creator.username && (
+                <button
+                  className="hover:bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full"
+                  onClick={() =>
+                    setOpenMenuPostId(
+                      post._id === openMenuPostId ? null : post._id
+                    )
+                  }
+                >
+                  ...
+                </button>
+              )}
             </span>
 
             {openMenuPostId === post._id && (
@@ -135,13 +109,18 @@ export default function PostFeed() {
                 className="absolute right-0 mt-0 w-48 bg-white border rounded shadow-lg"
               >
                 <div className="py-1">
-                  <button
-                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 text-red-500 flex items-center"
-                    onClick={() => handleDelete(post._id)}
-                  >
-                    <FaTrash className="mr-2" />
-                    Delete
-                  </button>
+                  {onDeletePost && (
+                    <button
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 text-red-500 flex items-center"
+                      onClick={() => {
+                        onDeletePost(post._id);
+                        setOpenMenuPostId(null); // Close the menu after deleting
+                      }}
+                    >
+                      <FaTrash className="mr-2" />
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             )}

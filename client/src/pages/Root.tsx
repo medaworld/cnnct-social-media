@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import { getTokenDuration } from '../utils/authUtils';
-import MainNavigation from '../components/MainNavigation/MainNavigation';
+import MainNavigation from '../components/Layout/MainNavigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

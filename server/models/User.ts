@@ -12,6 +12,16 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
   },
+  image: {
+    url: {
+      type: String,
+      required: false,
+    },
+    id: {
+      type: String,
+      required: false,
+    },
+  },
   posts: [
     {
       type: Schema.Types.ObjectId,

@@ -4,6 +4,7 @@ import ErrorPage from './pages/Error';
 import HomePage from './pages/Home';
 import MessagingPage from './pages/Messaging';
 import { checkAuthLoader, tokenLoader } from './utils/authUtils';
+import ProfilePage from './pages/Profile';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -15,6 +16,16 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       {
         path: '/messaging',
+        element: <MessagingPage />,
+        loader: checkAuthLoader,
+      },
+      {
+        path: '/edit-profile',
+        element: <ProfilePage />,
+        loader: checkAuthLoader,
+      },
+      {
+        path: '/:username',
         element: <MessagingPage />,
         loader: checkAuthLoader,
       },

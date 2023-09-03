@@ -20,6 +20,7 @@ export default buildSchema(`
         email: String!
         password: String!
         posts: [Post!]!
+        image: Image
     }
 
     type AuthData {
@@ -28,6 +29,19 @@ export default buildSchema(`
     }
 
     type PostData {
+        posts: [Post!]!
+        totalPosts: Int!
+    }
+
+    type UserData {
+        _id: ID!
+        username: String!
+        email: String!
+        image: Image
+    }
+
+    type UserPostData {
+        user: User!
         posts: [Post!]!
         totalPosts: Int!
     }
@@ -51,6 +65,8 @@ export default buildSchema(`
     type RootQuery {
         login(username: String!, password: String!): AuthData!
         posts(skip: Int!, limit: Int!): PostData!
+        user: UserData!
+        userPosts(username: String!, skip: Int!, limit: Int!): UserPostData!
     }
 
     type RootMutation {

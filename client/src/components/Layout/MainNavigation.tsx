@@ -1,6 +1,4 @@
 import { Button } from '@material-tailwind/react';
-import { Link } from 'react-router-dom';
-
 import { FaHome, FaEnvelope, FaUser } from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
 import CustomModal from '../Common/CustomModal';
@@ -11,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, logoutUser } from '../../store/user-actions';
 import { AppDispatch } from '../../store';
 import { UserState } from '../../store/user-slice';
+import CustomNavLink from '../Common/CustomNavLink';
 
 export default function MainNavigation() {
   useRouteLoaderData('root');
@@ -42,27 +41,27 @@ export default function MainNavigation() {
             alt="cnnct logo"
             className="mb-4 w-32 mx-auto md:mx-0"
           />
-          <Link
+          <CustomNavLink
             to="/"
-            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+            className="flex items-center space-x-4 text-xl p-2 rounded"
           >
             <FaHome className="text-2xl" />
             <span>Home</span>
-          </Link>
-          <Link
+          </CustomNavLink>
+          <CustomNavLink
             to="/messages"
-            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+            className="flex items-center space-x-4 text-xl p-2 rounded"
           >
             <FaEnvelope className="text-2xl" />
             <span>Messages</span>
-          </Link>
-          <Link
+          </CustomNavLink>
+          <CustomNavLink
             to="/edit-profile"
-            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+            className="flex items-center space-x-4 text-xl p-2 rounded"
           >
             <FaUser className="text-2xl" />
             <span>Profile</span>
-          </Link>
+          </CustomNavLink>
           <Button color="blue" onClick={() => setShowModal(true)}>
             Post
           </Button>

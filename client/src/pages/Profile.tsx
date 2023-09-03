@@ -58,20 +58,22 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="w-full h-full min-h-screen flex flex-col p-10 bg-gray-100">
-      {user.image.url ? (
-        <img
-          src={''}
-          alt="Profile"
-          className="w-48 h-48 rounded-full object-cover mt-10"
-        />
-      ) : (
-        <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center mt-10">
-          <FaUser size={130} />
-        </div>
-      )}
+    <div className="w-full h-full min-h-screen flex flex-col p-5 bg-gray-100">
+      <div className="border-b border-gray-300 p-2">
+        {user.image.url ? (
+          <img
+            src={''}
+            alt="Profile"
+            className="w-48 h-48 rounded-full object-cover mt-10"
+          />
+        ) : (
+          <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center mt-10">
+            <FaUser size={130} />
+          </div>
+        )}
 
-      <h2 className="mt-4 text-xl font-semibold">@{user.username}</h2>
+        <h2 className="mt-4 text-xl font-semibold">@{user.username}</h2>
+      </div>
 
       <PostFeed
         posts={user.posts}

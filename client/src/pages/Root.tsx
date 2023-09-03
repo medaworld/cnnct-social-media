@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Outlet, useLoaderData } from 'react-router-dom';
 import { getTokenDuration } from '../utils/authUtils';
 import MainNavigation from '../components/MainNavigation/MainNavigation';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function RootLayout() {
   const token = useLoaderData();
@@ -25,6 +27,7 @@ export default function RootLayout() {
       <div className="flex max-w-screen-2xl w-full h-full">
         {navigation}
         <main className="w-full h-full">
+          <ToastContainer />
           <Outlet />
         </main>
       </div>

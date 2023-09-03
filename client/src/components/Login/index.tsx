@@ -2,6 +2,7 @@ import { useState } from 'react';
 import logo from '../../assets/logo.png';
 import CustomModal from '../CustomModal';
 import SignUpForm from '../Register/RegisterForm';
+import { toast } from 'react-toastify';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -33,17 +34,25 @@ function Login() {
 
       const data = await response.json();
 
+      if (data.errors && data.errors.length > 0) {
+        toast.error(data.errors[0].message);
+        return;
+      }
+
       const { token } = data.data.login;
       if (token) {
         localStorage.setItem('authToken', token);
         const expiration = new Date();
         expiration.setHours(expiration.getHours() + 1);
         localStorage.setItem('expiration', expiration.toISOString());
+        toast.success('Login Successful');
         return (window.location.href = '/');
       } else {
+        toast.error('Login Failed');
         console.error(data.errors.message);
       }
     } catch (error) {
+      toast.error('Login Failed');
       console.error('Error logging in:', error);
     }
   };

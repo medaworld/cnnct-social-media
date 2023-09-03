@@ -1,5 +1,6 @@
 import { Dispatch } from 'redux';
 import { postActions } from './post-slice';
+import { toast } from 'react-toastify';
 
 export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
   return async (dispatch: Dispatch) => {
@@ -62,12 +63,14 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
       );
     } catch (error) {
       console.log('Fetching posts failed: ' + error);
+      throw error;
     }
   };
 };
 
 export const addPost = (content: string, formImage: FormData | undefined) => {
   return async (dispatch: Dispatch) => {
+    const toastId = toast.loading('Posting...');
     const token = localStorage.getItem('authToken');
     let image = '';
 
@@ -112,11 +115,30 @@ export const addPost = (content: string, formImage: FormData | undefined) => {
     });
 
     const data = await response.json();
-    if (data.errors) {
-      throw new Error(data.errors[0].message);
+
+    if (data.errors && data.errors.length > 0) {
+      toast.update(toastId, {
+        render: data.errors[0].message,
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        closeButton: true,
+      });
+
+      return;
     }
 
     dispatch(postActions.addPost(data.data.createPost));
+    toast.update(toastId, {
+      render: 'Post successful',
+      type: 'success',
+      isLoading: false,
+      autoClose: 3000,
+      closeOnClick: true,
+      closeButton: true,
+    });
+    toast.dismiss();
     return true;
   };
 };
@@ -144,8 +166,10 @@ export const deletePost = (postId: string) => {
     });
 
     const data = await response.json();
-    if (data.errors) {
-      throw new Error(data.errors[0].message);
+
+    if (data.errors && data.errors.length > 0) {
+      toast.error(data.errors[0].message);
+      return;
     }
 
     dispatch(postActions.deletePost(postId));

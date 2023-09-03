@@ -6,7 +6,11 @@ import { useDispatch } from 'react-redux';
 import { addPost } from '../../store/post-actions';
 import { AppDispatch } from '../../store';
 
-export default function PostForm() {
+export default function PostForm({
+  setClose,
+}: {
+  setClose?: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const dispatch = useDispatch<AppDispatch>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -59,6 +63,7 @@ export default function PostForm() {
         setInputValue('');
         setImagePreviewUrl(null);
         setFormImage(undefined);
+        setClose && setClose(false);
       }
     } catch (error) {
       console.error('Error submitting post:', error);

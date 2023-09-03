@@ -7,6 +7,7 @@ import CustomModal from '../CustomModal';
 import PostForm from '../PostForm/PostForm';
 import { useState } from 'react';
 import logo from '../../assets/logo.png';
+import { toast } from 'react-toastify';
 
 export default function MainNavigation() {
   const [showModal, setShowModal] = useState(false);
@@ -16,36 +17,47 @@ export default function MainNavigation() {
     try {
       localStorage.removeItem('authToken');
       localStorage.removeItem('expiration');
+      toast.success('Logout Successful');
       window.location.href = '/';
     } catch (error) {
+      toast.error('Logout Failed');
       console.error('Error during logout:', error);
     }
   };
   return (
     <>
       <div className="w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0">
-        <div className="flex-1 flex flex-col space-y-6">
+        <div className="flex-1 flex flex-col space-y-4">
           <img
             src={logo}
             alt="cnnct logo"
             className="mb-4 w-32 mx-auto md:mx-0"
           />
-          <Link to="/home" className="flex items-center space-x-4 text-xl">
+          <Link
+            to="/"
+            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+          >
             <FaHome className="text-2xl" />
             <span>Home</span>
           </Link>
           <Link
             to="/notifications"
-            className="flex items-center space-x-4 text-xl"
+            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
           >
             <FaBell className="text-2xl" />
             <span>Notifications</span>
           </Link>
-          <Link to="/messages" className="flex items-center space-x-4 text-xl">
+          <Link
+            to="/messages"
+            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+          >
             <FaEnvelope className="text-2xl" />
             <span>Messages</span>
           </Link>
-          <Link to="/profile" className="flex items-center space-x-4 text-xl">
+          <Link
+            to="/profile"
+            className="flex items-center space-x-4 text-xl hover:bg-gray-100 p-2 rounded"
+          >
             <FaUser className="text-2xl" />
             <span>Profile</span>
           </Link>
@@ -61,7 +73,7 @@ export default function MainNavigation() {
       </div>
 
       <CustomModal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <PostForm />
+        <PostForm setClose={setShowModal} />
       </CustomModal>
     </>
   );

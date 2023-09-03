@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { json, useNavigation } from 'react-router-dom';
+import { useNavigation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function RegisterForm() {
   const navigation = useNavigation();
@@ -32,18 +33,12 @@ function RegisterForm() {
         body: JSON.stringify(graphqlQuery),
       });
 
-      if (response.status === 422 || response.status === 400) {
-        return response;
-      }
-
-      if (!response.ok) {
-        throw json(
-          { message: 'Could not authenticate user.' },
-          { status: 500 }
-        );
-      }
-
       const data = await response.json();
+
+      if (data.errors && data.errors.length > 0) {
+        toast.error(data.errors[0].message);
+        return;
+      }
 
       const { token } = data.data.createUser;
       if (token) {
@@ -51,11 +46,14 @@ function RegisterForm() {
         const expiration = new Date();
         expiration.setHours(expiration.getHours() + 1);
         localStorage.setItem('expiration', expiration.toISOString());
-        window.location.href = '/';
-      } else if (data.message) {
-        console.log(data.message);
+        toast.success('Registration Successful');
+        return (window.location.href = '/');
+      } else {
+        toast.error('Registration Failed');
+        console.error(data.errors.message);
       }
     } catch (error) {
+      toast.error('Registration Failed');
       console.error('Error registering user:', error);
     }
   };

@@ -13,6 +13,7 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* 
       <div className="w-72 p-4 bg-white shadow-md flex flex-col space-y-4 h-screen sticky top-0 hidden lg:block">
         <input
           className="p-2 border rounded"
@@ -29,7 +30,7 @@ function Dashboard() {
             ))}
           </ul>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

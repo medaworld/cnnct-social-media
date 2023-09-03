@@ -1,4 +1,10 @@
-export function validateUserInput(userInput: any) {
+import User from '../models/User';
+
+export async function validateUserInput(userInput: any) {
+  if (!userInput.username || userInput.username.trim() === '') {
+    throw new Error('Username should not be empty.');
+  }
+
   if (
     !userInput.email ||
     !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(userInput.email)
@@ -6,11 +12,20 @@ export function validateUserInput(userInput: any) {
     throw new Error('Please enter a valid email.');
   }
 
-  if (!userInput.password || userInput.password.length < 3) {
-    throw new Error('Password should be at least 3 characters long.');
+  const existingUser = await User.findOne({
+    $or: [{ username: userInput.username }, { email: userInput.email }],
+  });
+
+  if (existingUser) {
+    if (existingUser.username === userInput.username) {
+      throw new Error('Username taken');
+    }
+    if (existingUser.email === userInput.email) {
+      throw new Error('Email already registered');
+    }
   }
 
-  if (!userInput.username || userInput.username.trim() === '') {
-    throw new Error('Username should not be empty.');
+  if (!userInput.password || userInput.password.length < 3) {
+    throw new Error('Password should be at least 3 characters long.');
   }
 }

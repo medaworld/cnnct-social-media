@@ -14,7 +14,7 @@ import graphqlSchema from './graphql/schema';
 import graphqlResolvers from './graphql/resolvers';
 import isAuthenticated from './middleware/isAuthenticated';
 import multer from 'multer';
-import { storage } from './config/cloudinary';
+import { cloudinary, storage } from './config/cloudinary';
 const upload = multer({ storage });
 
 require('dotenv').config({ path: './.env.local' });
@@ -82,18 +82,27 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use('/user', userRoutes);
-app.post('/upload-image', upload.single('image'), (req: any, res, next) => {
-  if (!req.isAuth) {
-    const error = new Error('Not authenticated');
-    throw error;
+app.post(
+  '/upload-image',
+  upload.single('image'),
+  async (req: any, res, next) => {
+    if (!req.isAuth) {
+      const error = new Error('Not authenticated');
+      throw error;
+    }
+    if (!req.file) {
+      return res.status(200).json({ message: 'No file provided' });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    return res.status(201).json({
+      message: 'File stored.',
+      filePath: result.url,
+      publicId: `${process.env.CLOUDINARY_FOLDER}/${result.original_filename}`,
+    });
   }
-  if (!req.file) {
-    return res.status(200).json({ message: 'No file provided' });
-  }
-  return res
-    .status(201)
-    .json({ message: 'File stored.', filePath: req.file.path });
-});
+);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   console.log(error);

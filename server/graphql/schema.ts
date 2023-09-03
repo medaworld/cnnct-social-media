@@ -1,10 +1,15 @@
 import { buildSchema } from 'graphql/utilities/';
 
 export default buildSchema(`
+    type Image {
+        url: String
+        id: String
+    }
+
     type Post {
-        _id: ID!
+        _id: ID
         content: String!
-        imageUrl: String
+        image: Image
         creator: User!
         createdAt: String!
     }
@@ -33,9 +38,14 @@ export default buildSchema(`
         password: String!
     }
 
+    input ImageInput {
+        url: String!
+        id: String!
+    }
+    
     input PostInputData {
         content: String!
-        imageUrl: String
+        image: ImageInput
     }
 
     type RootQuery {
@@ -46,6 +56,7 @@ export default buildSchema(`
     type RootMutation {
         createUser(userInput: UserInputData): AuthData!
         createPost(postInput: PostInputData): Post!
+        deletePost(postId: String!): Post!
     }
 
     schema {

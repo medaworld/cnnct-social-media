@@ -13,7 +13,9 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
                             posts {
                                 _id
                                 content
-                                imageUrl
+                                image {
+                                  url
+                                }
                                 creator {
                                     username
                                 }
@@ -52,7 +54,7 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
       );
 
       dispatch(
-        postActions.replacePosts({
+        postActions.updatePosts({
           posts: posts.posts,
           totalPosts: posts.totalPosts,
           hasMore: hasMore,
@@ -67,7 +69,7 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
 export const addPost = (content: string, formImage: FormData | undefined) => {
   return async (dispatch: Dispatch) => {
     const token = localStorage.getItem('authToken');
-    let imageUrl = null;
+    let image = '';
 
     if (formImage) {
       const imageResponse = await fetch('http://localhost:8080/upload-image', {
@@ -79,16 +81,18 @@ export const addPost = (content: string, formImage: FormData | undefined) => {
       });
 
       const imageData = await imageResponse.json();
-      imageUrl = `"${imageData.filePath}"`;
+      image = `, image: {url: "${imageData.filePath}", id: "${imageData.publicId}"}`;
     }
 
     const graphqlQuery = {
       query: `
                   mutation {
-                      createPost(postInput: {content:"${content}", imageUrl:${imageUrl}}) {
+                      createPost(postInput: {content:"${content}"${image}}) {
                           _id
                           content
-                          imageUrl
+                          image {
+                            url                        
+                          }
                           creator {
                             username
                           }
@@ -113,6 +117,38 @@ export const addPost = (content: string, formImage: FormData | undefined) => {
     }
 
     dispatch(postActions.addPost(data.data.createPost));
+    return true;
+  };
+};
+
+export const deletePost = (postId: string) => {
+  return async (dispatch: Dispatch) => {
+    const graphqlQuery = {
+      query: `
+        mutation {
+          deletePost(postId: "${postId}") {
+            _id
+          }
+        }
+      `,
+    };
+
+    const token = localStorage.getItem('authToken');
+    const response = await fetch('http://localhost:8080/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
+
+    const data = await response.json();
+    if (data.errors) {
+      throw new Error(data.errors[0].message);
+    }
+
+    dispatch(postActions.deletePost(postId));
     return true;
   };
 };

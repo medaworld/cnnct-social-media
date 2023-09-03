@@ -1,9 +1,12 @@
+import { Request } from 'express';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import Post from '../models/Post';
 import { validateUserInput } from '../utils/validatorUtils';
+import { cloudinary } from '../config/cloudinary';
 
 const jwtSecret: string = process.env.JWT_SECRET!;
+
 export default {
   createUser: async function ({ userInput }: { userInput: any }) {
     validateUserInput(userInput);
@@ -67,34 +70,46 @@ export default {
       token,
     };
   },
+
   createPost: async function ({ postInput }: { postInput: any }, req: any) {
     if (!req.isAuth) {
-      const error = new Error('Not authenticated');
-      throw error;
+      throw new Error('Not authenticated');
     }
-
-    const user = await User.findById(req.userId);
 
     if (!postInput.content || postInput.content.trim() === '') {
       throw new Error('Content should not be empty.');
     }
 
-    const post = new Post({
-      content: postInput.content,
-      imageUrl: postInput.imageUrl,
-      creator: user,
-    });
-    const createdPost = await post.save();
-    user.posts.push(createdPost);
-    await user.save();
-    console.log('Successfully posted');
-    return {
-      ...createdPost._doc,
-      _id: createdPost._id.toString(),
-      createdAt: createdPost.createdAt.toISOString(),
-      updatedAt: createdPost.updatedAt.toISOString(),
-    };
+    try {
+      const user = await User.findById(req.userId);
+      if (!user) {
+        throw new Error('User not found.');
+      }
+
+      const post = new Post({
+        content: postInput.content,
+        image: postInput.image || null,
+        creator: user,
+      });
+      const createdPost = await post.save();
+
+      user.posts.push(createdPost);
+      await user.save();
+
+      console.log('Successfully posted');
+
+      return {
+        ...createdPost._doc,
+        _id: createdPost._id.toString(),
+        createdAt: createdPost.createdAt.toISOString(),
+        updatedAt: createdPost.updatedAt.toISOString(),
+      };
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw new Error('Server error while creating post.');
+    }
   },
+
   posts: async function (args: any, req: any) {
     if (!req.isAuth) {
       const error = new Error('Not authenticated');
@@ -118,5 +133,44 @@ export default {
       }),
       totalPosts: totalPosts,
     };
+  },
+  deletePost: async function ({ postId }: { postId: string }, req: any) {
+    if (!req.isAuth) {
+      throw new Error('Not authenticated');
+    }
+
+    try {
+      const post = await Post.findById(postId);
+      if (!post) {
+        throw new Error('Post not found.');
+      }
+      if (post.creator._id.toString() !== req.userId.toString()) {
+        throw new Error('Not authorized to delete this post');
+      }
+
+      if (post.image) {
+        cloudinary.uploader.destroy(
+          post.image.id,
+          (error: string, result: string) => {
+            if (error) {
+              console.error('Error deleting image from Cloudinary:', error);
+            } else {
+              console.log('Image deleted successfully:', result);
+            }
+          }
+        );
+      }
+
+      await Post.findByIdAndRemove(postId);
+
+      const user = await User.findById(req.userId);
+      user.posts.pull(postId);
+      await user.save();
+
+      return { message: 'Post deleted successfully' };
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw new Error('Server error while creating post.');
+    }
   },
 };

@@ -11,7 +11,7 @@ cloudinary.config({
 export const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'cnnct',
+    folder: process.env.CLOUDINARY_FOLDER,
     allowedFormats: ['jpeg', 'png', 'jpg'],
   },
 });

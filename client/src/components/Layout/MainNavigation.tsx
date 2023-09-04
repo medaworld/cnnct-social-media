@@ -1,5 +1,11 @@
 import { Button } from '@material-tailwind/react';
-import { FaHome, FaEnvelope, FaUser, FaPencilAlt } from 'react-icons/fa';
+import {
+  FaHome,
+  FaEnvelope,
+  FaUser,
+  FaPencilAlt,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
 import CustomModal from '../Common/CustomModal';
 import PostForm from '../Common/PostForm';
@@ -51,7 +57,7 @@ export default function MainNavigation() {
 
   return (
     <>
-      <div className="w-20 md:w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0">
+      <div className="w-20 md:w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0 transition-all">
         <div className="flex-1 flex flex-col space-y-4">
           <img
             src={logo}
@@ -93,7 +99,7 @@ export default function MainNavigation() {
         <div className="relative w-full">
           <Button
             color="white"
-            className="w-full normal-case flex justify-center p-2"
+            className="w-full normal-case flex justify-center md:justify-start p-2"
             onClick={() => setOpenMenu(true)}
           >
             <span className="flex items-center text-lg">
@@ -117,16 +123,11 @@ export default function MainNavigation() {
           {openMenu && (
             <div
               ref={menuRef}
-              className="absolute bottom-12 w-full bg-white border rounded shadow-lg"
+              className="flex justify-center items-center cursor-pointer text-red-500 hover:bg-gray-100 p-2 bg-white absolute bottom-12 w-full border rounded shadow-lg"
+              onClick={handleLogout}
             >
-              <div className="py-1">
-                <button
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 text-red-500 flex items-center"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </button>
-              </div>
+              <FaSignOutAlt />
+              <span className="hidden md:inline">Logout</span>
             </div>
           )}
         </div>

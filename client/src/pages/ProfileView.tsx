@@ -7,9 +7,13 @@ import { deletePost } from '../store/post-actions';
 import { AppDispatch } from '../store';
 import { fetchUserPosts } from '../store/user-actions';
 import { toast } from 'react-toastify';
+import { Button } from '@material-tailwind/react';
+import { useNavigate } from 'react-router-dom';
+import { getAuthToken } from '../utils/authUtils';
 
 export default function ProfileView() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { username } = useParams();
   const POSTS_PER_PAGE = 50;
   const [posts, setPosts] = useState([]);
@@ -64,6 +68,31 @@ export default function ProfileView() {
     }
   };
 
+  async function startConversation(userId: string) {
+    try {
+      const token = getAuthToken();
+      const response = await fetch('http://localhost:8080/start-conversation', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+
+      if (data.conversationId) {
+        navigate(`/messages/${data.conversationId}`);
+      }
+    } catch (error) {
+      console.error(
+        'There was an error starting or fetching the conversation:',
+        error
+      );
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen space-x-1">
@@ -93,6 +122,14 @@ export default function ProfileView() {
         </div>
         <div className="flex w-full justify-between items-center">
           <h2 className="text-xl font-semibold pt-3 pb-3">@{username}</h2>
+          <Button
+            color="blue"
+            className="w-fit"
+            type="button"
+            onClick={() => startConversation(user._id)}
+          >
+            Send Message
+          </Button>
         </div>
       </div>
 

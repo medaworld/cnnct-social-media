@@ -2,10 +2,12 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import RootLayout from './pages/Root';
 import ErrorPage from './pages/Error';
 import HomePage from './pages/Home';
-import MessagingPage from './pages/Messaging';
+import MessagesLayout from './pages/MessagesLayout';
 import { checkAuthLoader, tokenLoader } from './utils/authUtils';
 import ProfileEdit from './pages/ProfileEdit';
 import ProfileView from './pages/ProfileView';
+import MessagesChat from './components/Messages/MessagesChat';
+import MessageList from './components/Messages/MessagesList';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -17,8 +19,12 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       {
         path: '/messages',
-        element: <MessagingPage />,
+        element: <MessagesLayout />,
         loader: checkAuthLoader,
+        children: [
+          { index: true, element: <MessageList /> },
+          { path: ':conversationId', element: <MessagesChat /> },
+        ],
       },
       {
         path: '/edit-profile',

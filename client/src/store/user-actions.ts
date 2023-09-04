@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { toast } from 'react-toastify';
 import { UserState, userActions } from './user-slice';
+import { getAuthToken } from '../utils/authUtils';
 
 export const loginUser = (username: string, password: string) => {
   return async (dispatch: Dispatch) => {
@@ -150,7 +151,7 @@ export const fetchUser = () => {
     };
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = getAuthToken();
       const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
@@ -224,7 +225,7 @@ export const fetchUserPosts = (
     };
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = getAuthToken();
       const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
@@ -260,7 +261,7 @@ export const fetchUserPosts = (
 export const addUserImage = (formImage: FormData | undefined) => {
   return async (dispatch: Dispatch) => {
     const toastId = toast.loading('Saving image...');
-    const token = localStorage.getItem('authToken');
+    const token = getAuthToken();
 
     const imageResponse = await fetch(
       'http://localhost:8080/upload-user-image',
@@ -343,7 +344,7 @@ export const fetchUserProfile = (username: string) => {
     };
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = getAuthToken();
       const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {

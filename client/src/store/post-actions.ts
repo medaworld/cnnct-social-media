@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import { postActions } from './post-slice';
 import { toast } from 'react-toastify';
 import { userActions } from './user-slice';
+import { getAuthToken } from '../utils/authUtils';
 
 export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
   return async (dispatch: Dispatch) => {
@@ -31,7 +32,7 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
                     }
                 `,
       };
-      const token = localStorage.getItem('authToken');
+      const token = getAuthToken();
       const response = await fetch('http://localhost:8080/graphql', {
         method: 'POST',
         headers: {
@@ -75,7 +76,7 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
 export const addPost = (content: string, formImage: FormData | undefined) => {
   return async (dispatch: Dispatch) => {
     const toastId = toast.loading('Posting...');
-    const token = localStorage.getItem('authToken');
+    const token = getAuthToken();
     let image = '';
 
     if (formImage) {
@@ -160,7 +161,7 @@ export const deletePost = (postId: string) => {
       `,
     };
 
-    const token = localStorage.getItem('authToken');
+    const token = getAuthToken();
     const response = await fetch('http://localhost:8080/graphql', {
       method: 'POST',
       headers: {

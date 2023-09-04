@@ -28,6 +28,19 @@ const UserSchema = new Schema({
       ref: 'Post',
     },
   ],
+  conversations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Conversation',
+    },
+  ],
+});
+
+UserSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    await mongoose.model('Message').deleteMany({ sender: doc._id });
+    await mongoose.model('Conversation').deleteMany({ participants: doc._id });
+  }
 });
 
 UserSchema.plugin(passportLocalMongoose);

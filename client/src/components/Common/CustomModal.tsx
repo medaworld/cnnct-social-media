@@ -1,6 +1,6 @@
 import Modal from 'react-modal';
 import { FaTimes } from 'react-icons/fa';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 Modal.setAppElement('#root');
 
@@ -13,6 +13,19 @@ export default function CustomModal({
   onClose: () => void;
   children: ReactNode;
 }) {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -26,7 +39,7 @@ export default function CustomModal({
         content: {
           top: '50%',
           left: '50%',
-          minWidth: '500px',
+          minWidth: windowWidth <= 640 ? '90%' : '500px',
           right: 'auto',
           bottom: 'auto',
           marginRight: '-50%',

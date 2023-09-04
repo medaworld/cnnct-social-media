@@ -14,7 +14,10 @@ import graphqlSchema from './graphql/schema';
 import graphqlResolvers from './graphql/resolvers';
 import isAuthenticated from './middleware/isAuthenticated';
 import multer from 'multer';
-import { cloudinary, storage, userImageStorage } from './config/cloudinary';
+import { storage, userImageStorage } from './config/cloudinary';
+import Message from './models/Message';
+import Conversation from './models/Conversation';
+import { getUserIdFromToken } from './utils/authUtils';
 
 require('dotenv').config({ path: './.env.local' });
 
@@ -124,6 +127,33 @@ app.post(
   }
 );
 
+app.post('/start-conversation', async (req: any, res) => {
+  if (!req.isAuth) {
+    const error = new Error('Not authenticated');
+    throw error;
+  }
+  const currentUserId = req.userId;
+  const recipientId = req.body.userId;
+
+  try {
+    let conversation = await Conversation.findOne({
+      participants: { $all: [currentUserId, recipientId] },
+    });
+
+    if (!conversation) {
+      conversation = new Conversation({
+        participants: [currentUserId, recipientId],
+      });
+      await conversation.save();
+    }
+
+    res.json({ conversationId: conversation._id });
+  } catch (err) {
+    console.error('Error in startOrFetchConversation:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   console.log(error);
   const status = error.statusCode || 500;
@@ -134,14 +164,84 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 
 const server = app.listen(port);
 const io = require('socket.io')(server, { cors: { origin: '*' } });
+const socketToUserIdMap = new Map();
 
 io.on('connection', (socket: socketIo.Socket) => {
-  console.log('Client connected');
-
-  socket.on('send_message', (message: string) => {
-    console.log(`Message received: ${message}`);
-    io.emit('receive_message', message);
+  socket.on('authenticate', (token: string) => {
+    const userId = getUserIdFromToken(token);
+    if (userId) {
+      socketToUserIdMap.set(socket.id, userId);
+      console.log(`Authenticated socket ${socket.id} for user ${userId}`);
+    } else {
+      console.error('Failed to authenticate socket', socket.id);
+    }
   });
+
+  socket.on('join_room', async (conversationId: string) => {
+    socket.join(conversationId);
+
+    try {
+      const senderId = socketToUserIdMap.get(socket.id);
+      const conversation = await Conversation.findById(conversationId).populate(
+        {
+          path: 'participants',
+          select: 'username image',
+        }
+      );
+      const recipient = conversation.participants.find(
+        (participant: { _id: Object }) => {
+          return participant._id.toString() !== senderId;
+        }
+      );
+
+      if (!conversation) {
+        console.error(`Conversation with ID ${conversationId} not found.`);
+        return;
+      }
+
+      const previousMessages = await Message.find({
+        conversation: conversationId,
+      })
+        .sort('createdAt')
+        .limit(20);
+
+      socket.emit('initial_data', {
+        recipient: recipient,
+        messages: previousMessages,
+      });
+    } catch (err) {
+      console.error('Error fetching previous messages:', err);
+    }
+  });
+
+  socket.on(
+    'send_message',
+    async (conversationId: string, messageContent: string) => {
+      const senderId = socketToUserIdMap.get(socket.id);
+
+      if (!senderId) {
+        console.error('Failed to find sender for this socket connection.');
+        return;
+      }
+
+      io.to(conversationId).emit('receive_message', {
+        sender: senderId,
+        content: messageContent,
+        createdAt: new Date(),
+      });
+
+      try {
+        const newMessage = new Message({
+          content: messageContent,
+          sender: senderId,
+          conversation: conversationId,
+        });
+        await newMessage.save();
+      } catch (err) {
+        console.error('Error saving message:', err);
+      }
+    }
+  );
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');

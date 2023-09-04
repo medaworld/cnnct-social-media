@@ -17,7 +17,7 @@ export const loginUser = (username: string, password: string) => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/graphql', {
+      const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ export const loginUser = (username: string, password: string) => {
       });
 
       // API
-      //     const response = await fetch('http://localhost:8080/user/login', {
+      //     const response = await fetch('${process.env.REACT_APP_API}/user/login', {
       //       method: 'POST',
       //       headers: {
       //         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const registerUser = (formData: {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/graphql', {
+      const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const registerUser = (formData: {
       });
 
       // API
-      // const response = await fetch('http://localhost:8080/user/register', {
+      // const response = await fetch('${process.env.REACT_APP_API}/user/register', {
       //   method: 'POST',
       //   headers: {
       //     'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ export const fetchUser = () => {
 
     try {
       const token = getAuthToken();
-      const response = await fetch('http://localhost:8080/graphql', {
+      const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + token,
@@ -225,7 +225,7 @@ export const fetchUserPosts = (
 
     try {
       const token = getAuthToken();
-      const response = await fetch('http://localhost:8080/graphql', {
+      const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + token,
@@ -263,7 +263,7 @@ export const addUserImage = (formImage: FormData | undefined) => {
     const token = getAuthToken();
 
     const imageResponse = await fetch(
-      'http://localhost:8080/upload-user-image',
+      `${process.env.REACT_APP_API}/upload-user-image`,
       {
         method: 'POST',
         headers: {
@@ -287,7 +287,7 @@ export const addUserImage = (formImage: FormData | undefined) => {
                     `,
     };
 
-    const response = await fetch('http://localhost:8080/graphql', {
+    const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + token,
@@ -344,7 +344,7 @@ export const fetchUserProfile = (username: string) => {
 
     try {
       const token = getAuthToken();
-      const response = await fetch('http://localhost:8080/graphql', {
+      const response = await fetch(`${process.env.REACT_APP_API}/graphql`, {
         method: 'POST',
         headers: {
           Authorization: 'Bearer ' + token,

@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import { getAuthToken } from '../utils/authUtils';
+import Loader from '../components/Common/Loader';
 
 export default function ProfileView() {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,14 +72,17 @@ export default function ProfileView() {
   async function startConversation(userId: string) {
     try {
       const token = getAuthToken();
-      const response = await fetch('http://localhost:8080/start-conversation', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + token,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API}/start-conversation`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        }
+      );
 
       const data = await response.json();
 
@@ -94,13 +98,7 @@ export default function ProfileView() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen space-x-1">
-        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounceDelayed"></div>
-        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounceDelayed delay-100"></div>
-        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounceDelayed delay-200"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

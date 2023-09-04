@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
 import { Post } from '../../store/post-slice';
-
 import { FaTrash, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { UserState } from '../../store/user-slice';
+import Loader from './Loader';
 
 interface PostFeedProps {
   posts: Post[];
@@ -45,6 +44,10 @@ export default function PostFeed({
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>

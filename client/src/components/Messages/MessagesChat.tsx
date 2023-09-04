@@ -18,7 +18,7 @@ export default function MessagesChat() {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
-    socket.current = io('http://localhost:8080');
+    socket.current = io(`${process.env.REACT_APP_API}`);
 
     socket.current.on('receive_message', (msg: string) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
@@ -38,12 +38,6 @@ export default function MessagesChat() {
     };
   }, [conversationId]);
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (socket.current) {
@@ -51,6 +45,12 @@ export default function MessagesChat() {
       setMessage('');
     }
   };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className="w-full h-screen flex flex-col">

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { getAuthToken } from '../utils/authUtils';
 import { Outlet } from 'react-router-dom';
 import MessageList from '../components/Messages/MessagesList';
+import { FaEnvelope } from 'react-icons/fa';
+import Loader from '../components/Common/Loader';
 
 type Conversation = {
   _id: string;
@@ -10,14 +12,16 @@ type Conversation = {
 };
 
 export default function MessagesLayout() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
     async function fetchConversations() {
       try {
+        setIsLoading(true);
         const token = getAuthToken();
         const response = await fetch(
-          'http://localhost:8080/user-conversations',
+          `${process.env.REACT_APP_API}/user-conversations`,
           {
             method: 'GET',
             headers: {
@@ -29,6 +33,8 @@ export default function MessagesLayout() {
         setConversations(data);
       } catch (error) {
         console.error('Failed to fetch conversations:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -40,8 +46,17 @@ export default function MessagesLayout() {
       <div className="md:w-2/6 bg-gray-200">
         {conversations.length === 0 ? (
           <div>
-            <h2 className="text-2xl font-semibold mb-4 p-4">Messages</h2>
-            <span className="p-4 text-xl">There are no conversations</span>
+            <div className="flex items-center justify-center md:justify-start text-2xl font-semibold p-4">
+              <FaEnvelope />
+              <span className="ml-3 hidden md:inline">Messages</span>
+            </div>
+            {isLoading ? (
+              <Loader />
+            ) : (
+              <span className="p-4 md:text-xl hidden md:inline">
+                There are no conversations
+              </span>
+            )}
           </div>
         ) : (
           <MessageList conversations={conversations} />

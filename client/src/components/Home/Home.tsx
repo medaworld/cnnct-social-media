@@ -59,7 +59,7 @@ function Home() {
 
   return (
     <div className="flex h-full min-h-screen">
-      <div className="flex-1 p-8 bg-gray-100">
+      <div className="flex-1 md:p-8 bg-gray-100">
         <div className="flex flex-col p-3 border-b border-gray-300 ">
           <PostForm />
         </div>

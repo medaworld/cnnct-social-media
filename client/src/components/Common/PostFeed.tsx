@@ -46,8 +46,6 @@ export default function PostFeed({
     };
   }, []);
 
-  console.log(posts);
-
   return (
     <>
       {error && !isLoading && (
@@ -72,12 +70,16 @@ export default function PostFeed({
         {posts.map((post: Post) => (
           <div
             key={post._id}
-            className="post relative p-4 border-b border-gray-300"
+            className="post relative md:p-4 border-b border-gray-300"
           >
-            <span className="flex mb-2 items-center justify-between">
+            <span className="flex mt-2 mb-2 items-center justify-between">
               <div className="flex items-center">
                 <Link
-                  to={`/${post.creator.username}`}
+                  to={`/${
+                    user.username === post.creator.username
+                      ? 'edit-profile'
+                      : post.creator.username
+                  }`}
                   className="hover:underline"
                 >
                   <span className="flex items-center">
@@ -106,12 +108,13 @@ export default function PostFeed({
                   </span>
                 </Link>
 
-                <span className="text-sm text-gray-500">
+                <span className="text-xs md:text-sm text-gray-500">
                   {new Date(post.createdAt).toLocaleTimeString()}
                   {' - '}
                   {new Date(post.createdAt).toLocaleDateString()}
                 </span>
               </div>
+
               {onDeletePost && user.username === post.creator.username && (
                 <button
                   className="hover:bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full"
@@ -137,7 +140,7 @@ export default function PostFeed({
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200 text-red-500 flex items-center"
                       onClick={() => {
                         onDeletePost(post._id);
-                        setOpenMenuPostId(null); // Close the menu after deleting
+                        setOpenMenuPostId(null);
                       }}
                     >
                       <FaTrash className="mr-2" />
@@ -148,7 +151,7 @@ export default function PostFeed({
               </div>
             )}
 
-            <p className="text-lg ml-10 mb-2">{post.content}</p>
+            <p className="text-lg md:ml-10 mb-2">{post.content}</p>
             {post.image.url && (
               <img
                 src={post.image.url}

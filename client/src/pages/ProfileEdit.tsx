@@ -1,8 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import { FaUser } from 'react-icons/fa';
 import PostFeed from '../components/Common/PostFeed';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '../store/user-slice';
-import { useEffect, useRef, useState } from 'react';
 import { deletePost } from '../store/post-actions';
 import { AppDispatch } from '../store';
 import { addUserImage, fetchUserPosts } from '../store/user-actions';
@@ -11,7 +11,7 @@ import { compressImage } from '../utils/imageUtils';
 import { Button } from '@material-tailwind/react';
 import { Form } from 'react-router-dom';
 
-export default function ProfilePage() {
+export default function ProfileEdit() {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector(
     ({ userState }: { userState: UserState }) => userState

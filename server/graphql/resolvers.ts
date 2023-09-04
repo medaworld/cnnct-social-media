@@ -2,7 +2,6 @@ import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import Post from '../models/Post';
 import { validateUserInput } from '../utils/validatorUtils';
-import { cloudinary } from '../config/cloudinary';
 import { deleteFromCloudinary } from '../utils/cloudinaryUtils';
 
 const jwtSecret: string = process.env.JWT_SECRET!;
@@ -209,43 +208,24 @@ export default {
     };
   },
 
-  userProfile: async function (
-    {
-      username,
-      skip,
-      limit,
-    }: { username: string; skip: number; limit: number },
-    req: any
-  ) {
+  userProfile: async function ({ username }: { username: string }, req: any) {
     if (!req.isAuth) {
       throw new Error('Not authenticated');
     }
 
     const user = await User.findOne({ username: username });
-    let userPosts;
-    let totalPosts;
-    if (user) {
-      totalPosts = await Post.countDocuments({ creator: user._id });
-      userPosts = await Post.find({ creator: user._id })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('creator');
-    }
 
     if (!user) {
       throw new Error('User not authorized');
     }
 
     return {
-      user: {
-        ...user._doc,
-        _id: user._id.toString(),
-        username: user.username.toString(),
-        email: user.email.toString(),
-        image: user.image,
-        posts: userPosts,
-        totalPosts: totalPosts,
+      ...user._doc,
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      image: {
+        url: user.image.url,
       },
     };
   },

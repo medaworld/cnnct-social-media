@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { toast } from 'react-toastify';
-import { userActions } from './user-slice';
+import { UserState, userActions } from './user-slice';
 
 export const loginUser = (username: string, password: string) => {
   return async (dispatch: Dispatch) => {
@@ -182,7 +182,10 @@ export const fetchUserPosts = (
   page: number,
   POSTS_PER_PAGE: number
 ) => {
-  return async (dispatch: Dispatch) => {
+  return async (
+    dispatch: Dispatch,
+    getState: () => { userState: UserState }
+  ) => {
     const graphqlQuery = {
       query: `
         {
@@ -239,7 +242,13 @@ export const fetchUserPosts = (
         return;
       }
 
-      dispatch(userActions.setUserPosts(data.data.userPosts));
+      const currentState = getState();
+
+      if (
+        data.data.userPosts.user.username === currentState.userState.username
+      ) {
+        dispatch(userActions.setUserPosts(data.data.userPosts));
+      }
       return data.data.userPosts;
     } catch (error) {
       toast.error('Error fetching user posts data');
@@ -314,5 +323,48 @@ export const addUserImage = (formImage: FormData | undefined) => {
     });
     toast.dismiss();
     return true;
+  };
+};
+
+export const fetchUserProfile = (username: string) => {
+  return async (dispatch: Dispatch) => {
+    const graphqlQuery = {
+      query: `
+        {
+          userProfile(username: "${username}") {
+            username
+            email
+            image {
+              url
+            }
+          }
+        }
+      `,
+    };
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('http://localhost:8080/graphql', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(graphqlQuery),
+      });
+
+      const data = await response.json();
+
+      if (data.errors && data.errors.length > 0) {
+        toast.error(data.errors[0].message);
+        console.error(data.errors[0].message);
+        return;
+      }
+
+      return data.data.user;
+    } catch (error) {
+      toast.error('Error fetching user data');
+      console.error('Error fetching user:', error);
+    }
   };
 };

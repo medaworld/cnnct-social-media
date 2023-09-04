@@ -1,5 +1,5 @@
 import { Button } from '@material-tailwind/react';
-import { FaHome, FaEnvelope, FaUser } from 'react-icons/fa';
+import { FaHome, FaEnvelope, FaUser, FaPencilAlt } from 'react-icons/fa';
 import { useRouteLoaderData } from 'react-router-dom';
 import CustomModal from '../Common/CustomModal';
 import PostForm from '../Common/PostForm';
@@ -51,36 +51,41 @@ export default function MainNavigation() {
 
   return (
     <>
-      <div className="w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0">
+      <div className="w-20 md:w-72 p-4 bg-white shadow-md flex flex-col h-screen sticky top-0">
         <div className="flex-1 flex flex-col space-y-4">
           <img
             src={logo}
             alt="cnnct logo"
-            className="mb-4 w-32 mx-auto md:mx-0"
+            className="mb-4 w-24 md:w-32 mx-auto md:mx-0"
           />
           <CustomNavLink
             to="/"
-            className="flex items-center space-x-4 text-xl p-2 rounded"
+            className="flex justify-center items-center md:justify-start space-x-4 text-xl p-2 rounded"
           >
             <FaHome className="text-2xl" />
-            <span>Home</span>
+            <span className="hidden md:inline">Home</span>
           </CustomNavLink>
           <CustomNavLink
             to="/messages"
-            className="flex items-center space-x-4 text-xl p-2 rounded"
+            className="flex justify-center items-center md:justify-start space-x-4 text-xl p-2 rounded"
           >
             <FaEnvelope className="text-2xl" />
-            <span>Messages</span>
+            <span className="hidden md:inline">Messages</span>
           </CustomNavLink>
           <CustomNavLink
             to="/edit-profile"
-            className="flex items-center space-x-4 text-xl p-2 rounded"
+            className="flex justify-center items-center md:justify-start space-x-4 text-xl p-2 rounded"
           >
             <FaUser className="text-2xl" />
-            <span>Profile</span>
+            <span className="hidden md:inline">Profile</span>
           </CustomNavLink>
-          <Button color="blue" onClick={() => setShowModal(true)}>
-            Post
+          <Button
+            className="text-base flex justify-center p-2"
+            color="blue"
+            onClick={() => setShowModal(true)}
+          >
+            <FaPencilAlt />
+            <span className="hidden md:inline ml-2">Post</span>
           </Button>
 
           <div className="mt-auto"></div>
@@ -88,11 +93,11 @@ export default function MainNavigation() {
         <div className="relative w-full">
           <Button
             color="white"
-            className="w-full normal-case"
+            className="w-full normal-case flex justify-center p-2"
             onClick={() => setOpenMenu(true)}
           >
             <span className="flex items-center text-lg">
-              <div className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center flex align-items justify-content relative overflow-hidden mr-2">
+              <div className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center flex align-items justify-content relative overflow-hidden md:mr-2">
                 {user.image && user.image.url ? (
                   <img
                     src={user.image.url}
@@ -103,7 +108,9 @@ export default function MainNavigation() {
                   <FaUser size={20} />
                 )}
               </div>
-              {user.username && `@${user.username}`}
+              <span className="hidden md:inline">
+                {user.username && `@${user.username}`}
+              </span>
             </span>
           </Button>
 

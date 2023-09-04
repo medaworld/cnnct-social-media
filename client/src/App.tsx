@@ -4,7 +4,8 @@ import ErrorPage from './pages/Error';
 import HomePage from './pages/Home';
 import MessagingPage from './pages/Messaging';
 import { checkAuthLoader, tokenLoader } from './utils/authUtils';
-import ProfilePage from './pages/Profile';
+import ProfileEdit from './pages/ProfileEdit';
+import ProfileView from './pages/ProfileView';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -15,18 +16,18 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       {
-        path: '/messaging',
+        path: '/messages',
         element: <MessagingPage />,
         loader: checkAuthLoader,
       },
       {
         path: '/edit-profile',
-        element: <ProfilePage />,
+        element: <ProfileEdit />,
         loader: checkAuthLoader,
       },
       {
         path: '/:username',
-        element: <MessagingPage />,
+        element: <ProfileView />,
         loader: checkAuthLoader,
       },
     ],

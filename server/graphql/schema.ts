@@ -67,6 +67,7 @@ export default buildSchema(`
         posts(skip: Int!, limit: Int!): PostData!
         user: UserData!
         userPosts(username: String!, skip: Int!, limit: Int!): UserPostData!
+        userProfile(username: String!): UserData!
     }
 
     type RootMutation {

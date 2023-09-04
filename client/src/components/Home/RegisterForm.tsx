@@ -4,7 +4,11 @@ import { registerUser } from '../../store/user-actions';
 import { Form } from 'react-router-dom';
 import { AppDispatch } from '../../store';
 
-function RegisterForm() {
+function RegisterForm({
+  setShowModal,
+}: {
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const dispatch = useDispatch<AppDispatch>();
   const [formData, setFormData] = useState({
     username: '',
@@ -18,6 +22,7 @@ function RegisterForm() {
       const result = await dispatch(registerUser(formData));
       if (result) {
         setFormData({ username: '', email: '', password: '' });
+        setShowModal(false);
       }
     } catch (error) {
       console.error('Error registering user:', error);

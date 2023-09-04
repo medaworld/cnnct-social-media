@@ -23,6 +23,7 @@ export default {
       jwtSecret,
       { expiresIn: '1h' }
     );
+
     return {
       ...registeredUser._doc,
       _id: registeredUser._id.toString(),

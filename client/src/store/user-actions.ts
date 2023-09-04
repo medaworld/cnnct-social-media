@@ -73,6 +73,7 @@ export const registerUser = (formData: {
       mutation {
         createUser(userInput: {username:"${formData.username}", email:"${formData.email}", password:"${formData.password}"}) {
           _id
+          token
         }
       }
     `,
@@ -105,13 +106,11 @@ export const registerUser = (formData: {
 
       const { token } = data.data.createUser;
       if (token) {
-        localStorage.setItem('authToken', token);
-        const expiration = new Date();
-        expiration.setHours(expiration.getHours() + 1);
-        localStorage.setItem('expiration', expiration.toISOString());
+        // localStorage.setItem('authToken', token);
+        // const expiration = new Date();
+        // expiration.setHours(expiration.getHours() + 1);
+        // localStorage.setItem('expiration', expiration.toISOString());
         toast.success('Registration Successful');
-
-        window.location.href = '/';
         return true;
       } else {
         toast.error('Registration Failed');

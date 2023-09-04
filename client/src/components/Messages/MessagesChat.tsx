@@ -53,9 +53,9 @@ export default function MessagesChat() {
   };
 
   return (
-    <div className="w-full h-screen 100 flex flex-col">
+    <div className="w-full h-screen flex flex-col">
       <div
-        className="flex-grow overflow-y-scroll p-8 rounded "
+        className="flex-grow overflow-y-scroll md:p-8 rounded "
         ref={messagesEndRef}
       >
         {recipient.username && (
@@ -78,6 +78,7 @@ export default function MessagesChat() {
             </Link>
           </div>
         )}
+
         <div className="flex flex-col items-stretch w-full mt-4">
           <ul>
             {messages.map((msg: any, idx) => (
@@ -95,8 +96,8 @@ export default function MessagesChat() {
                   <div
                     className={`p-4 max-w-1/2 w-fit ${
                       msg.sender !== recipient._id
-                        ? 'bg-blue-100 rounded-tr-none rounded-l-full text-right'
-                        : 'bg-gray-200 rounded-tl-none rounded-r-full'
+                        ? 'bg-blue-100 rounded-tr-none rounded-l-3xl text-right'
+                        : 'bg-gray-200 rounded-tl-none rounded-r-3xl'
                     }`}
                   >
                     {msg.content}

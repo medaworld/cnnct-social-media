@@ -7,7 +7,7 @@ import { checkAuthLoader, tokenLoader } from './utils/authUtils';
 import ProfileEdit from './pages/ProfileEdit';
 import ProfileView from './pages/ProfileView';
 import MessagesChat from './components/Messages/MessagesChat';
-import MessageList from './components/Messages/MessagesList';
+import MessagesIndex from './components/Messages/MessagesIndex';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
         element: <MessagesLayout />,
         loader: checkAuthLoader,
         children: [
-          { index: true, element: <MessageList /> },
+          { index: true, element: <MessagesIndex /> },
           { path: ':conversationId', element: <MessagesChat /> },
         ],
       },

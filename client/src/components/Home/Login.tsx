@@ -81,7 +81,7 @@ function Login() {
       </div>
 
       <CustomModal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <SignUpForm />
+        <SignUpForm setShowModal={setShowModal} />
       </CustomModal>
     </div>
   );

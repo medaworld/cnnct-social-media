@@ -154,6 +154,43 @@ app.post('/start-conversation', async (req: any, res) => {
   }
 });
 
+app.get('/user-conversations', async (req: any, res) => {
+  if (!req.isAuth) {
+    const error = new Error('Not authenticated');
+    throw error;
+  }
+
+  const userId = req.userId;
+
+  try {
+    const conversations = await Conversation.find({
+      participants: userId,
+    }).populate({
+      path: 'participants',
+      select: 'username image',
+    });
+
+    const updatedConversations = conversations.map((conv) => {
+      const recipient = conv.participants.find(
+        (participant: { _id: Object }) => {
+          return participant._id.toString() !== userId;
+        }
+      );
+      const newConv = {
+        ...conv._doc,
+        recipient,
+      };
+      delete newConv.participants;
+      return newConv;
+    });
+
+    return res.json(updatedConversations);
+  } catch (err) {
+    console.error('Error fetching user conversations:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   console.log(error);
   const status = error.statusCode || 500;

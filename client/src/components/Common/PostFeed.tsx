@@ -109,9 +109,7 @@ export default function PostFeed({
                 </Link>
 
                 <span className="text-xs md:text-sm text-gray-500">
-                  {new Date(post.createdAt).toLocaleTimeString()}
-                  {' - '}
-                  {new Date(post.createdAt).toLocaleDateString()}
+                  {new Date(post.createdAt).toLocaleString()}
                 </span>
               </div>
 

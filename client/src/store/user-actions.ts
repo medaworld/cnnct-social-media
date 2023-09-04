@@ -263,7 +263,7 @@ export const addUserImage = (formImage: FormData | undefined) => {
     const token = getAuthToken();
 
     const imageResponse = await fetch(
-      `${process.env.REACT_APP_API}/upload-user-image`,
+      `${process.env.REACT_APP_API}/image/user-image`,
       {
         method: 'POST',
         headers: {

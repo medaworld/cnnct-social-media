@@ -81,7 +81,7 @@ export const addPost = (content: string, formImage: FormData | undefined) => {
 
     if (formImage) {
       const imageResponse = await fetch(
-        `${process.env.REACT_APP_API}/upload-image`,
+        `${process.env.REACT_APP_API}/image/post-image`,
         {
           method: 'POST',
           headers: {

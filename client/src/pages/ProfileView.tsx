@@ -73,7 +73,7 @@ export default function ProfileView() {
     try {
       const token = getAuthToken();
       const response = await fetch(
-        `${process.env.REACT_APP_API}/start-conversation`,
+        `${process.env.REACT_APP_API}/conversation/post-conversation`,
         {
           method: 'POST',
           headers: {

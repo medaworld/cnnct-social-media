@@ -21,7 +21,7 @@ export default function MessagesLayout() {
         setIsLoading(true);
         const token = getAuthToken();
         const response = await fetch(
-          `${process.env.REACT_APP_API}/user-conversations`,
+          `${process.env.REACT_APP_API}/conversation/get-conversation`,
           {
             method: 'GET',
             headers: {
@@ -47,7 +47,10 @@ export default function MessagesLayout() {
         {conversations.length === 0 ? (
           <div>
             <div className="flex items-center justify-center md:justify-start text-2xl font-semibold p-4">
-              <FaEnvelope />
+              <div className="flex items-center justify-center w-12">
+                <FaEnvelope />
+              </div>
+
               <span className="ml-3 hidden md:inline">Messages</span>
             </div>
             {isLoading ? (

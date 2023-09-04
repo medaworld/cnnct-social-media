@@ -114,6 +114,7 @@ export default function ProfileEdit() {
             ref={fileInputRef}
             style={{ display: 'none' }}
             onChange={handleImageChange}
+            accept=".jpg, .jpeg, .png"
           />
 
           <div

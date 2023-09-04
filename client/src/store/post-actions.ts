@@ -20,6 +20,9 @@ export const fetchPosts = (page: number, POSTS_PER_PAGE: number) => {
                                 }
                                 creator {
                                     username
+                                    image {
+                                      url
+                                    }
                                 }
                                 createdAt
                             }

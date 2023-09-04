@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export type Post = {
   _id: string;
-  creator: { username: string };
+  creator: { username: string; image: { url: string | null } };
   content: string;
   image: { url: string | null };
   createdAt: string;

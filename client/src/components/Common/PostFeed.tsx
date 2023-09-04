@@ -3,7 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 
 import { Post } from '../../store/post-slice';
 
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { UserState } from '../../store/user-slice';
@@ -46,6 +46,8 @@ export default function PostFeed({
     };
   }, []);
 
+  console.log(posts);
+
   return (
     <>
       {error && !isLoading && (
@@ -78,9 +80,30 @@ export default function PostFeed({
                   to={`/${post.creator.username}`}
                   className="hover:underline"
                 >
-                  <h4 className="text-md font-bold mr-3">
-                    @{post.creator.username}
-                  </h4>
+                  <span className="flex items-center">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center flex align-items justify-content relative overflow-hidden mr-2">
+                      {user.username === post.creator.username &&
+                      user.image &&
+                      user.image.url ? (
+                        <img
+                          src={user.image.url}
+                          alt="Profile"
+                          className="w-8 h-8 object-cover"
+                        />
+                      ) : post.creator.image && post.creator.image.url ? (
+                        <img
+                          src={post.creator.image.url}
+                          alt="Profile"
+                          className="w-8 h-8 object-cover"
+                        />
+                      ) : (
+                        <FaUser size={20} />
+                      )}
+                    </div>
+                    <h4 className="text-md font-bold mr-3">
+                      @{post.creator.username}
+                    </h4>
+                  </span>
                 </Link>
 
                 <span className="text-sm text-gray-500">
@@ -125,7 +148,7 @@ export default function PostFeed({
               </div>
             )}
 
-            <p className="text-lg mb-2">{post.content}</p>
+            <p className="text-lg ml-10 mb-2">{post.content}</p>
             {post.image.url && (
               <img
                 src={post.image.url}

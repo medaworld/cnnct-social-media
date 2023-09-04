@@ -18,10 +18,10 @@ export default buildSchema(`
         _id: ID!
         username: String!
         email: String!
-        password: String!
         posts: [Post!]!
         image: Image
     }
+    
 
     type AuthData {
         _id: ID!
@@ -73,6 +73,7 @@ export default buildSchema(`
         createUser(userInput: UserInputData): AuthData!
         createPost(postInput: PostInputData): Post!
         deletePost(postId: String!): Post!
+        addUserImage(userImage: ImageInput!): UserData!
     }
 
     schema {

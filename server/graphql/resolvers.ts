@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import Post from '../models/Post';
 import { validateUserInput } from '../utils/validatorUtils';
 import { cloudinary } from '../config/cloudinary';
+import { deleteFromCloudinary } from '../utils/cloudinaryUtils';
 
 const jwtSecret: string = process.env.JWT_SECRET!;
 
@@ -70,7 +71,7 @@ export default {
     try {
       const user = await User.findById(req.userId);
       if (!user) {
-        throw new Error('User not found.');
+        throw new Error('User not authorized.');
       }
 
       const post = new Post({
@@ -136,16 +137,7 @@ export default {
     }
 
     if (post.image && post.image.id) {
-      cloudinary.uploader.destroy(
-        post.image.id,
-        (error: string, result: string) => {
-          if (error) {
-            console.error('Error deleting image from Cloudinary:', error);
-          } else {
-            console.log('Image deleted successfully:', result);
-          }
-        }
-      );
+      await deleteFromCloudinary(post.image.id);
     }
 
     await Post.findByIdAndRemove(postId);
@@ -165,7 +157,7 @@ export default {
     const user = await User.findById(req.userId);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User not authorized');
     }
 
     return {
@@ -173,7 +165,9 @@ export default {
       _id: user._id.toString(),
       username: user.username,
       email: user.email,
-      image: user.image,
+      image: {
+        url: user.image.url,
+      },
     };
   },
 
@@ -185,7 +179,7 @@ export default {
     const user = await User.findOne({ username: args.username });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User not authorized');
     }
 
     let userPosts;
@@ -240,7 +234,7 @@ export default {
     }
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User not authorized');
     }
 
     return {
@@ -253,6 +247,33 @@ export default {
         posts: userPosts,
         totalPosts: totalPosts,
       },
+    };
+  },
+
+  addUserImage: async function (
+    { userImage }: { userImage?: { id: string; url: string } },
+    req: any
+  ) {
+    if (!req.isAuth) {
+      throw new Error('Not authenticated');
+    }
+
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      throw new Error('User not authorized');
+    }
+
+    if (user.image && user.image.id) {
+      await deleteFromCloudinary(user.image.id);
+    }
+
+    user.image = userImage;
+    const updatedUser = await user.save();
+    return {
+      ...updatedUser._doc,
+      _id: updatedUser._id.toString(),
+      image: updatedUser.image,
     };
   },
 };

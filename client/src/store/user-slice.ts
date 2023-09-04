@@ -25,6 +25,13 @@ const userSlice = createSlice({
       state._id = action.payload._id;
       state.username = action.payload.username;
       state.email = action.payload.email;
+      state.image = action.payload.image;
+    },
+    setUserImage: (
+      state,
+      action: PayloadAction<{ image: { url: string } }>
+    ) => {
+      state.image = action.payload.image;
     },
     setUserPosts: (state, action: PayloadAction<UserState>) => {
       state.posts = action.payload.posts;

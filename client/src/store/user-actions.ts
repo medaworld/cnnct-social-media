@@ -143,7 +143,6 @@ export const fetchUser = () => {
             email
             image {
               url
-              id
             }
           }
         }
@@ -209,6 +208,9 @@ export const fetchUserPosts = (
               creator {
                 _id
                 username
+                image {
+                  url
+                }
               }
               createdAt
             }
@@ -243,5 +245,74 @@ export const fetchUserPosts = (
       toast.error('Error fetching user posts data');
       console.error('Error fetching user posts:', error);
     }
+  };
+};
+
+export const addUserImage = (formImage: FormData | undefined) => {
+  return async (dispatch: Dispatch) => {
+    const toastId = toast.loading('Saving image...');
+    const token = localStorage.getItem('authToken');
+
+    const imageResponse = await fetch(
+      'http://localhost:8080/upload-user-image',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+        body: formImage,
+      }
+    );
+
+    const imageData = await imageResponse.json();
+
+    const graphqlQuery = {
+      query: `
+                  mutation {
+                      addUserImage(userImage: {url:"${imageData.filePath}", id: "${imageData.publicId}"}) {
+                          image {
+                            url
+                          }                    
+                        }
+                    }
+                    `,
+    };
+
+    const response = await fetch('http://localhost:8080/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(graphqlQuery),
+    });
+
+    const data = await response.json();
+
+    if (data.errors && data.errors.length > 0) {
+      toast.update(toastId, {
+        render: data.errors[0].message,
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        closeButton: true,
+      });
+
+      return;
+    }
+
+    const updatedImage = data.data.addUserImage.image;
+    dispatch(userActions.setUserImage({ image: updatedImage }));
+    toast.update(toastId, {
+      render: 'Image upload successful',
+      type: 'success',
+      isLoading: false,
+      autoClose: 3000,
+      closeOnClick: true,
+      closeButton: true,
+    });
+    toast.dismiss();
+    return true;
   };
 };

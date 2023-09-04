@@ -11,7 +11,15 @@ cloudinary.config({
 export const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: process.env.CLOUDINARY_FOLDER,
+    folder: `${process.env.CLOUDINARY_FOLDER}/post`,
+    allowedFormats: ['jpeg', 'png', 'jpg'],
+  },
+});
+
+export const userImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: `${process.env.CLOUDINARY_FOLDER}/user`,
     allowedFormats: ['jpeg', 'png', 'jpg'],
   },
 });

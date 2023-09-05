@@ -31,55 +31,62 @@ function Login() {
   return (
     <div className="min-h-screen">
       <div className="min-h-[85vh] flex items-center justify-center">
-        <div className="flex-1 max-w-4xl mx-6 md:mx-0 bg-white shadow-md rounded-md p-6">
-          <div className="flex flex-col md:flex-row">
-            {/* Left Section */}
-            <div className="flex-1 p-4">
-              <img
-                src={logo}
-                alt="cnnct logo"
-                className="mb-4 w-32 mx-auto md:mx-0"
-              />
-              <p className="text-xl font-bold">Connect with your friends!</p>
-            </div>
+        <div>
+          <div className="flex-1 max-w-4xl mx-6 md:mx-0 bg-white shadow-md rounded-md p-6">
+            <div className="flex flex-col md:flex-row">
+              {/* Left Section */}
+              <div className="flex-1 p-4">
+                <img
+                  src={logo}
+                  alt="cnnct logo"
+                  className="mb-4 w-32 mx-auto md:mx-0"
+                />
+                <p className="text-xl font-bold">Connect with your friends!</p>
+              </div>
 
-            {/* Right Section */}
-            <div className="flex-1 p-4">
-              <h2 className="text-2xl mb-4">Sign in</h2>
-              <Form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <input
-                    type="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Username"
-                  />
-                </div>
-                <div className="mb-4">
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder="Password"
-                  />
-                </div>
+              {/* Right Section */}
+              <div className="flex-1 p-4">
+                <h2 className="text-2xl mb-4">Sign in</h2>
+                <Form onSubmit={handleSubmit}>
+                  <div className="mb-4">
+                    <input
+                      type="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder="Username"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder="Password"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="block w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
+                  >
+                    Sign in
+                  </button>
+                </Form>
                 <button
-                  type="submit"
-                  className="block w-full bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
+                  className="mt-4 block w-full bg-gray-300 hover:bg-gray-400 text-gray-800 p-2 rounded"
+                  onClick={() => setShowModal(true)}
                 >
-                  Sign in
+                  Create account
                 </button>
-              </Form>
-              <button
-                className="mt-4 block w-full bg-gray-300 hover:bg-gray-400 text-gray-800 p-2 rounded"
-                onClick={() => setShowModal(true)}
-              >
-                Create account
-              </button>
+              </div>
             </div>
           </div>
+          <p className="mt-6 text-sm text-center text-gray-600 p-4">
+            <strong>Note:</strong> If it takes longer than 5 seconds to sign in,
+            the server is initializing. Please allow around 2 minutes for the
+            server to start.
+          </p>
         </div>
 
         <CustomModal isOpen={showModal} onClose={() => setShowModal(false)}>

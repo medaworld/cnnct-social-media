@@ -179,7 +179,7 @@ export default {
     const user = await User.findOne({ username: args.username });
 
     if (!user) {
-      throw new Error('User not authorized');
+      throw new Error('User not found');
     }
 
     let userPosts;

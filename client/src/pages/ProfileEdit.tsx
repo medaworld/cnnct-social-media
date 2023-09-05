@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FaUser } from 'react-icons/fa';
-import PostFeed from '../components/Common/PostFeed';
+import PostFeed from '../components/Common/Posts/PostFeed';
 import { useDispatch, useSelector } from 'react-redux';
 import { UserState } from '../store/user-slice';
 import { deletePost } from '../store/post-actions';

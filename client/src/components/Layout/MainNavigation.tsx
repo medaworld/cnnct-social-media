@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouteLoaderData } from 'react-router-dom';
 import { Button } from '@material-tailwind/react';
 import {
   FaHome,
@@ -6,12 +9,9 @@ import {
   FaPencilAlt,
   FaSignOutAlt,
 } from 'react-icons/fa';
-import { useRouteLoaderData } from 'react-router-dom';
-import CustomModal from '../Common/CustomModal';
-import PostForm from '../Common/PostForm';
-import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/logo.png';
-import { useDispatch, useSelector } from 'react-redux';
+import CustomModal from '../Common/CustomModal';
+import PostForm from '../Common/Posts/PostForm';
 import { fetchUser, logoutUser } from '../../store/user-actions';
 import { AppDispatch } from '../../store';
 import { UserState } from '../../store/user-slice';

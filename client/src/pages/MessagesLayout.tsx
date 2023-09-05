@@ -50,7 +50,6 @@ export default function MessagesLayout() {
               <div className="flex items-center justify-center w-12">
                 <FaEnvelope />
               </div>
-
               <span className="ml-3 hidden md:inline">Messages</span>
             </div>
             {isLoading ? (

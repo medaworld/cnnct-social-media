@@ -1,22 +1,21 @@
+require('dotenv').config({ path: './.env.local' });
 import express, { NextFunction, Request, Response } from 'express';
-import passport from 'passport';
 import session from 'express-session';
 import { secret, store } from './config/mongoose';
-import { setCurrentUser } from './middleware/setCurrentUser';
-import User from './models/User';
+import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import cors from 'cors';
+import { setCurrentUser } from './middleware/setCurrentUser';
+import isAuthenticated from './middleware/isAuthenticated';
+import { handleSocketMessages } from './controllers/messages';
+import User from './models/User';
 import { graphqlHTTP } from 'express-graphql';
 import graphqlSchema from './graphql/schema';
 import graphqlResolvers from './graphql/resolvers';
-import isAuthenticated from './middleware/isAuthenticated';
-import { handleSocketMessages } from './controllers/messages';
 import userRoutes from './routes/users';
 import conversationRoutes from './routes/conversations';
 import imageRoutes from './routes/images';
-
-require('dotenv').config({ path: './.env.local' });
 
 const port = process.env.PORT || 8080;
 const app = express();

@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaUser } from 'react-icons/fa';
-import PostFeed from '../components/Common/PostFeed';
 import { useDispatch } from 'react-redux';
-import { deletePost } from '../store/post-actions';
-import { AppDispatch } from '../store';
-import { fetchUserPosts } from '../store/user-actions';
-import { toast } from 'react-toastify';
-import { Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
-import { getAuthToken } from '../utils/authUtils';
+import { FaUser } from 'react-icons/fa';
+import { Button } from '@material-tailwind/react';
+
+import PostFeed from '../components/Common/Posts/PostFeed';
 import Loader from '../components/Common/Loader';
+import { deletePost } from '../store/post-actions';
+import { fetchUserPosts } from '../store/user-actions';
+import { AppDispatch } from '../store';
+import { getAuthToken } from '../utils/authUtils';
+import { toast } from 'react-toastify';
 
 export default function ProfileView() {
+  const POSTS_PER_PAGE = 50;
+
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { username } = useParams();
-  const POSTS_PER_PAGE = 50;
+
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState<any>({ image: {} });
   const [page, setPage] = useState(1);

@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import { AppDispatch } from '../../store';
 import { fetchPosts, deletePost } from '../../store/post-actions';
 import { PostState } from '../../store/post-slice';
-import PostFeed from '../Common/PostFeed';
-import PostForm from '../Common/PostForm';
+import PostFeed from '../Common/Posts/PostFeed';
+import PostForm from '../Common/Posts/PostForm';
 
 function Home() {
   const dispatch = useDispatch<AppDispatch>();

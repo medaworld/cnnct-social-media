@@ -1,0 +1,85 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const utilities_1 = require("graphql/utilities/");
+exports.default = (0, utilities_1.buildSchema)(`
+    type Image {
+        url: String
+        id: String
+    }
+
+    type Post {
+        _id: ID
+        content: String!
+        image: Image
+        creator: User!
+        createdAt: String!
+    }
+
+    type User {
+        _id: ID!
+        username: String!
+        email: String!
+        posts: [Post!]!
+        image: Image
+    }
+    
+
+    type AuthData {
+        _id: ID!
+        token: String!
+    }
+
+    type PostData {
+        posts: [Post!]!
+        totalPosts: Int!
+    }
+
+    type UserData {
+        _id: ID!
+        username: String!
+        email: String!
+        image: Image
+    }
+
+    type UserPostData {
+        user: User!
+        posts: [Post!]!
+        totalPosts: Int!
+    }
+
+    input UserInputData {
+        email: String!
+        username: String!
+        password: String!
+    }
+
+    input ImageInput {
+        url: String!
+        id: String!
+    }
+    
+    input PostInputData {
+        content: String!
+        image: ImageInput
+    }
+
+    type RootQuery {
+        login(username: String!, password: String!): AuthData!
+        posts(skip: Int!, limit: Int!): PostData!
+        user: UserData!
+        userPosts(username: String!, skip: Int!, limit: Int!): UserPostData!
+        userProfile(username: String!): UserData!
+    }
+
+    type RootMutation {
+        createUser(userInput: UserInputData): AuthData!
+        createPost(postInput: PostInputData): Post!
+        deletePost(postId: String!): Post!
+        addUserImage(userImage: ImageInput!): UserData!
+    }
+
+    schema {
+        query: RootQuery
+        mutation: RootMutation
+    }
+`);

@@ -24,7 +24,7 @@ cnnct is a mockup project for a social media platform, aiming to bring forth a s
 
 ## Demo
 
-**Note:** Please allow the server a minute to load.
+**Note:** Initialization might take a brief moment.
 <br>
 Experience the live demo here: [cnnct-social.vercel.app](https://cnnct-social.vercel.app/)
 <br>

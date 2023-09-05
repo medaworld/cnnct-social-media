@@ -5,6 +5,7 @@ import { getAuthToken } from '../../utils/authUtils';
 import { FaUser } from 'react-icons/fa';
 import { FiSend } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import Loader from '../Common/Loader';
 
 export default function MessagesChat() {
   const { conversationId } = useParams();
@@ -15,10 +16,12 @@ export default function MessagesChat() {
   });
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const socket = useRef<Socket | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
+    setIsLoading(true);
     socket.current = io(`${process.env.REACT_APP_API}`);
 
     socket.current.on('receive_message', (msg: string) => {
@@ -28,6 +31,7 @@ export default function MessagesChat() {
     socket.current.on('initial_data', (initialData: any) => {
       setRecipient(initialData.recipient);
       setMessages(initialData.messages);
+      setIsLoading(false);
     });
 
     const token = getAuthToken();
@@ -52,6 +56,10 @@ export default function MessagesChat() {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className="w-full h-screen flex flex-col">

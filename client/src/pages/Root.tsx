@@ -23,7 +23,7 @@ export default function RootLayout() {
   const navigation = token ? <MainNavigation /> : '';
 
   return (
-    <div className="flex justify-center h-full bg-white">
+    <div className="flex justify-center h-full bg-gray-100">
       <div className="flex max-w-screen-2xl w-full h-full">
         {navigation}
         <main className="w-full h-full">

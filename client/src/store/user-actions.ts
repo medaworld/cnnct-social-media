@@ -5,6 +5,7 @@ import { getAuthToken } from '../utils/authUtils';
 
 export const loginUser = (username: string, password: string) => {
   return async (dispatch: Dispatch) => {
+    const toastId = toast.loading('Signing in...');
     const graphqlQuery = {
       query: `
          {
@@ -37,7 +38,14 @@ export const loginUser = (username: string, password: string) => {
       const data = await response.json();
 
       if (data.errors && data.errors.length > 0) {
-        toast.error(data.errors[0].message);
+        toast.update(toastId, {
+          render: data.errors[0].message,
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
         return;
       }
 
@@ -47,16 +55,37 @@ export const loginUser = (username: string, password: string) => {
         const expiration = new Date();
         expiration.setHours(expiration.getHours() + 1);
         localStorage.setItem('expiration', expiration.toISOString());
-        toast.success('Login Successful');
+        toast.update(toastId, {
+          render: 'Sign in successful',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
 
         window.location.href = '/';
         return true;
       } else {
-        toast.error('Login Failed');
+        toast.update(toastId, {
+          render: 'Sign in failed',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
         console.error(data.errors.message);
       }
     } catch (error) {
-      toast.error('Login Failed');
+      toast.update(toastId, {
+        render: 'Sign in failed',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        closeButton: true,
+      });
       console.error('Error logging in:', error);
     }
   };
@@ -68,6 +97,7 @@ export const registerUser = (formData: {
   password: string;
 }) => {
   return async (dispatch: Dispatch) => {
+    const toastId = toast.loading('Creating account...');
     const graphqlQuery = {
       query: `
       mutation {
@@ -100,7 +130,14 @@ export const registerUser = (formData: {
       const data = await response.json();
 
       if (data.errors && data.errors.length > 0) {
-        toast.error(data.errors[0].message);
+        toast.update(toastId, {
+          render: data.errors[0].message,
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
         return;
       }
 
@@ -110,14 +147,36 @@ export const registerUser = (formData: {
         // const expiration = new Date();
         // expiration.setHours(expiration.getHours() + 1);
         // localStorage.setItem('expiration', expiration.toISOString());
-        toast.success('Registration Successful');
+        toast.update(toastId, {
+          render: 'Registration successful! Please sign in',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
+
         return true;
       } else {
-        toast.error('Registration Failed');
+        toast.update(toastId, {
+          render: 'Registration failed',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000,
+          closeOnClick: true,
+          closeButton: true,
+        });
         console.error(data.errors.message);
       }
     } catch (error) {
-      toast.error('Registration Failed');
+      toast.update(toastId, {
+        render: 'Registration failed',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+        closeOnClick: true,
+        closeButton: true,
+      });
       console.error('Error registering user:', error);
     }
   };

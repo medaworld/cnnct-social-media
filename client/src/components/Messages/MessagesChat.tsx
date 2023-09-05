@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { getAuthToken } from '../../utils/authUtils';
 import { FaUser } from 'react-icons/fa';
+import { FiSend } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 export default function MessagesChat() {
@@ -97,7 +98,7 @@ export default function MessagesChat() {
                     className={`p-4 max-w-1/2 w-fit ${
                       msg.sender !== recipient._id
                         ? 'bg-blue-100 rounded-tr-none rounded-l-3xl text-right'
-                        : 'bg-gray-200 rounded-tl-none rounded-r-3xl'
+                        : 'bg-gray-300 rounded-tl-none rounded-r-3xl'
                     }`}
                   >
                     {msg.content}
@@ -119,7 +120,7 @@ export default function MessagesChat() {
       <div className="w-full flex-shrink-0 border-t">
         <form
           onSubmit={handleSendMessage}
-          className="flex w-full items-center p-5 bg-gray-100"
+          className="flex w-full items-center p-1 md:p-5 bg-gray-100"
         >
           <input
             value={message}
@@ -131,7 +132,7 @@ export default function MessagesChat() {
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 ml-2 rounded focus:outline-none shadow"
           >
-            Send
+            <FiSend />
           </button>
         </form>
       </div>
